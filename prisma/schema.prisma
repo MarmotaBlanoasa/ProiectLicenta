@@ -8,14 +8,17 @@ generator client {
 }
 
 model User {
-  id    String @id @default(cuid())
-  email String @unique
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  password Password?
-  notes    Note[]
+  id           String        @id @default(cuid())
+  email        String        @unique
+  password     Password?
+  businessName String?
+  phone        String?
+  address      String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  clients      Client[]
+  transactions Transaction[]
+  invoices     Invoice[]
 }
 
 model Password {
@@ -25,14 +28,61 @@ model Password {
   userId String @unique
 }
 
-model Note {
-  id    String @id @default(cuid())
-  title String
-  body  String
+model Client {
+  id       String    @id @default(cuid())
+  name     String
+  email    String?
+  phone    String?
+  address  String?
+  notes    String?
+  userId   String
+  user     User      @relation(fields: [userId], references: [id])
+  invoices Invoice[]
+}
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Category {
+  id           String        @id @default(cuid())
+  name         String
+  type         String // Consider using an Enum for 'income' and 'expense'
+  transactions Transaction[]
+}
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String
+model Transaction {
+  id            String   @id @default(cuid())
+  date          DateTime
+  type          String // This can also be an Enum ('income', 'expense')
+  amount        Float
+  categoryId    String
+  category      Category @relation(fields: [categoryId], references: [id])
+  payeePayer    String?
+  paymentMethod String?
+  notes         String?
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+}
+
+model Invoice {
+  id              String     @id @default(cuid())
+  invoiceNumber   String
+  dateIssued      DateTime
+  dueDate         DateTime
+  totalAmount     Float
+  paidAmount      Float      @default(0.0)
+  status          String
+  recurring       Boolean    @default(false)
+  nextBillingDate DateTime?
+  clientId        String
+  client          Client     @relation(fields: [clientId], references: [id])
+  userId          String
+  user            User       @relation(fields: [userId], references: [id])
+  lineItems       LineItem[]
+}
+
+model LineItem {
+  id          String  @id @default(cuid())
+  description String
+  quantity    Int
+  price       Float
+  invoiceId   String
+  invoice     Invoice @relation(fields: [invoiceId], references: [id])
 }

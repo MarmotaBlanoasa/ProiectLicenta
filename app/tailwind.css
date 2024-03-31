@@ -1,68 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Light Theme Base Colors */
+    --text-color: #00254A; /* Deep navy blue */
+    --background: hsl(0, 0%, 100%); /* White Background */
+    --foreground: 222.2deg 13% 15%; /* Dark Blue Text */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 210deg 100% 98%; /* Light Blue Cards */
+    --card-foreground: 222.2deg 13% 15%; /* Dark Blue Text on Cards */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 210deg 100% 98%; /* Light Blue Popovers */
+    --popover-foreground: 222.2deg 13% 15%; /* Dark Blue Text on Popovers */
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 222.2deg 84% 30%; /* Dark Blue Primary */
+    --primary-foreground: 0deg 0% 100%; /* White Text for Primary */
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 210deg 40% 96.1%; /* Secondary Light Blue */
+    --secondary-foreground: 222.2deg 84% 30%; /* Dark Blue Text for Secondary */
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 214.3deg 31.8% 91.4%; /* Muted for Less Prominent Elements */
+    --muted-foreground: 222.2deg 13% 15%; /* Darker Text on Muted */
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 34deg 100% 50%; /* Accent Color */
+    --accent-foreground: 0deg 0% 100%; /* White Text on Accent */
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0deg 84.2% 60.2%; /* Destructive Actions */
+    --destructive-foreground: 0deg 0% 100%; /* White Text for Destructive Elements */
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 214.3deg 31.8% 91.4%; /* Borders */
+    --input: 214.3deg 31.8% 91.4%; /* Input Fields */
+    --ring: 222.2deg 84% 30%; /* Focus Ring */
 
-    --radius: 0.5rem;
+    --radius: 0.5rem; /* Border Radius */
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark Theme Base Colors */
+    --background: 222.2deg 13% 15%; /* Dark Blue Background */
+    --foreground: 210deg 100% 98%; /* Light Blue Text */
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 222.2deg 15% 20%; /* Slightly Lighter Dark Blue Cards */
+    --card-foreground: 210deg 100% 98%; /* Light Blue Text on Cards */
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 222.2deg 15% 20%; /* Slightly Lighter Dark Blue Popovers */
+    --popover-foreground: 210deg 100% 98%; /* Light Blue Text on Popovers */
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 210deg 100% 98%; /* Light Blue Primary Elements in Dark Mode */
+    --primary-foreground: 222.2deg 13% 15%; /* Dark Blue Text for Primary Elements */
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 217.2deg 32.6% 17.5%; /* Secondary Color for Dark Mode */
+    --secondary-foreground: 210deg 100% 98%; /* Light Blue Text for Secondary */
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 217.2deg 32.6% 17.5%; /* Muted Color for Dark Mode */
+    --muted-foreground: 210deg 40% 96.1%; /* Light Muted Text */
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 34deg 100% 50%; /* Accent Color for Dark Mode */
+    --accent-foreground: 0deg 0% 100%; /* White Text on Accent */
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0deg 62.8% 30.6%; /* Destructive Actions in Dark Mode */
+    --destructive-foreground: 210deg 100% 98%; /* Light Text for Destructive Elements */
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 217.2deg 32.6% 17.5%; /* Dark Mode Borders */
+    --input: 217.2deg 32.6% 17.5%; /* Dark Mode Inputs */
+    --ring: 222.2deg 84% 30%; /* Focus Ring in Dark Mode */
   }
 }
 
@@ -71,6 +75,11 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background;
+    font-family: 'Roboto', sans-serif;
+    color: var(--text-color);
+  }
+  label{
+    font-weight: 500;
   }
 }

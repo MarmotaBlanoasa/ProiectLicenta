@@ -75,6 +75,11 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background;
+    font-family: 'Roboto', sans-serif;
+    color: var(--text-color);
+  }
+  label{
+    font-weight: 500;
   }
 }

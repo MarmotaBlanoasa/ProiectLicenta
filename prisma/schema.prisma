@@ -43,14 +43,14 @@ model Client {
 model Category {
   id           String        @id @default(cuid())
   name         String
-  type         String // Consider using an Enum for 'income' and 'expense'
+  type         String
   transactions Transaction[]
 }
 
 model Transaction {
   id            String   @id @default(cuid())
   date          DateTime
-  type          String // This can also be an Enum ('income', 'expense')
+  type          String
   amount        Float
   categoryId    String
   category      Category @relation(fields: [categoryId], references: [id])

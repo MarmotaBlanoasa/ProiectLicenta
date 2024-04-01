@@ -1,4 +1,5 @@
 import type {
+  ActionFunction,
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
@@ -10,40 +11,31 @@ import { useEffect, useRef } from "react";
 import { verifyLogin } from "~/models/user.server";
 import { createUserSession, getUserId } from "~/session.server";
 import { safeRedirect, validateEmail } from "~/utils";
+import * as zod from "zod";
+import {getValidatedFormData, useRemixForm} from "remix-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {Input} from "~/components/ui/ui/input";
+import {Button} from "~/components/ui/ui/button";
+
+const schema = zod.object({
+  email: zod.string().email(),
+  password: zod.string().min(8),
+});
+const resolver = zodResolver(schema);
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await getUserId(request);
-  if (userId) return redirect("/");
+  if (userId) return redirect("/dashboard");
   return json({});
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const formData = await request.formData();
-  const email = formData.get("email");
-  const password = formData.get("password");
-  const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
-  const remember = formData.get("remember");
-
-  if (!validateEmail(email)) {
-    return json(
-      { errors: { email: "Email is invalid", password: null } },
-      { status: 400 },
-    );
+  const {receivedValues, errors, data} = await getValidatedFormData<zod.infer<typeof schema>>(request, resolver);
+  if (errors) {
+    return json({errors, receivedValues}, {status: 400});
   }
-
-  if (typeof password !== "string" || password.length === 0) {
-    return json(
-      { errors: { email: null, password: "Password is required" } },
-      { status: 400 },
-    );
-  }
-
-  if (password.length < 8) {
-    return json(
-      { errors: { email: null, password: "Password is too short" } },
-      { status: 400 },
-    );
-  }
+    const {email, password} = data;
+  const redirectTo = safeRedirect('/dashboard', "/");
 
   const user = await verifyLogin(email, password);
 
@@ -56,7 +48,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   return createUserSession({
     redirectTo,
-    remember: remember === "on",
+    remember: true,
     request,
     userId: user.id,
   });
@@ -65,116 +57,43 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export const meta: MetaFunction = () => [{ title: "Login" }];
 
 export default function LoginPage() {
-  const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/dashboard";
-  const actionData = useActionData<typeof action>();
-  const emailRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (actionData?.errors?.email) {
-      emailRef.current?.focus();
-    } else if (actionData?.errors?.password) {
-      passwordRef.current?.focus();
-    }
-  }, [actionData]);
+  const {formState: {errors}, handleSubmit, register} = useRemixForm<zod.infer<typeof schema>>({
+    resolver,
+    defaultValues: {email: "", password: ""}
+  });
+  const actionData = useActionData<ActionFunction>();
 
   return (
-    <div className="flex min-h-full flex-col justify-center">
-      <div className="mx-auto w-full max-w-md px-8">
-        <Form method="post" className="space-y-6">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Email address
-            </label>
-            <div className="mt-1">
-              <input
-                ref={emailRef}
-                id="email"
-                required
-                // eslint-disable-next-line jsx-a11y/no-autofocus
-                autoFocus={true}
-                name="email"
-                type="email"
-                autoComplete="email"
-                aria-invalid={actionData?.errors?.email ? true : undefined}
-                aria-describedby="email-error"
-                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
-              />
-              {actionData?.errors?.email ? (
-                <div className="pt-1 text-red-700" id="email-error">
-                  {actionData.errors.email}
-                </div>
-              ) : null}
-            </div>
-          </div>
-
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Password
-            </label>
-            <div className="mt-1">
-              <input
-                id="password"
-                ref={passwordRef}
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                aria-invalid={actionData?.errors?.password ? true : undefined}
-                aria-describedby="password-error"
-                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
-              />
-              {actionData?.errors?.password ? (
-                <div className="pt-1 text-red-700" id="password-error">
-                  {actionData.errors.password}
-                </div>
-              ) : null}
-            </div>
-          </div>
-
-          <input type="hidden" name="redirectTo" value={redirectTo} />
-          <button
-            type="submit"
-            className="w-full rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
+      <div className='flex flex-grow-1'>
+        {/*<div className='w-screen bg-primary h-screen'/>*/}
+        <div className='flex flex-col justify-center items-center px-12 h-screen w-screen'>
+          <Form
+              method="post"
+              action='/login'
+              onSubmit={handleSubmit}
+              className='flex flex-col gap-4 w-1/4'
           >
-            Log in
-          </button>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember"
-                name="remember"
-                type="checkbox"
-                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <label
-                htmlFor="remember"
-                className="ml-2 block text-sm text-gray-900"
-              >
-                Remember me
-              </label>
+            <div>
+              <p>Welcome,</p>
+              <h1 className='font-bold text-2xl'>Log In</h1>
             </div>
-            <div className="text-center text-sm text-gray-500">
-              Don&apos;t have an account?{" "}
-              <Link
-                className="text-blue-500 underline"
-                to={{
-                  pathname: "/join",
-                  search: searchParams.toString(),
-                }}
-              >
-                Sign up
-              </Link>
+            <div>
+              <label htmlFor='email'>Email</label>
+              <Input {...register('email')} id='email' type='email' name='email' placeholder='Email'/>
+              {errors.email && <p className='text-destructive'>{errors.email.message}</p>}
+              {actionData?.errors?.email && <p className='text-destructive'>{actionData?.errors?.email}</p>}
             </div>
-          </div>
-        </Form>
+            <div>
+              <label htmlFor='password'>Password</label>
+              <Input {...register('password')} id='password' type='password' name='password'
+                     placeholder='Password'/>
+              {errors.password && <p className='text-destructive'>{errors.password.message}</p>}
+            </div>
+            <input type='hidden' name='redirectTo' value='/dashboard'/>
+            <Button type='submit'>Log in</Button>
+            <p>Don't have an account? <Link to='/create-account' className='underline text-primary'>Create new account</Link></p>
+          </Form>
+        </div>
       </div>
-    </div>
   );
 }

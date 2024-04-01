@@ -43,6 +43,12 @@ export function useMatchesData(
   );
   return route?.data as Record<string, unknown>;
 }
+export const useRouteData = (routeId: string) => {
+  const matches = useMatches();
+  const data = matches.find((match) => match.pathname === routeId)?.data;
+
+  return data as Record<string, unknown> || undefined;
+};
 
 function isUser(user: unknown): user is User {
   return (
@@ -73,4 +79,9 @@ export function useUser(): User {
 
 export function validateEmail(email: unknown): email is string {
   return typeof email === "string" && email.length > 3 && email.includes("@");
+}
+
+export const protectedRouteIds = ["/dashboard", '/transactions', '/invoices', '/profile', '/logout'];
+export function isProtectedRoute(route: string) {
+    return protectedRouteIds.includes(route);
 }

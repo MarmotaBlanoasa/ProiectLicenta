@@ -30,7 +30,38 @@ export async function createUser(email: User["email"], password: string, busines
         },
     });
 }
+export async function updateInfoById(id: User["id"], businessName: User["businessName"], phone: User["phone"], address: User["address"], taxInfo: User["taxInfo"]) {
+    return prisma.user.update({
+        where: {id},
+        data: {businessName, phone, address, taxInfo},
+    });
 
+}
+export async function updatePasswordById(id: User["id"], password: string, newPassword: string) {
+    const userWithPassword = await prisma.user.findUnique({
+        where: {id},
+        include: {
+            password: true,
+        },
+    });
+
+    if (!userWithPassword || !userWithPassword.password) {
+        return "USER_NOT_FOUND";
+    }
+
+    const isValid = await bcrypt.compare(password, userWithPassword.password.hash);
+
+    if (!isValid) {
+        return 'INVALID_PASSWORD';
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    return prisma.password.update({
+        where: {userId: id},
+        data: {hash: hashedPassword},
+    });
+}
 export async function deleteUserByEmail(email: User["email"]) {
     return prisma.user.delete({where: {email}});
 }

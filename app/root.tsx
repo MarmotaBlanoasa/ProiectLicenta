@@ -24,6 +24,7 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
 
 export default function App() {
     const location = useLocation();
+    const match = '/' + location.pathname.split('/')[1];
     return (
         <html lang="en" className="h-full">
         <head>
@@ -33,7 +34,7 @@ export default function App() {
             <Links/>
         </head>
         <body className="h-full">
-        {protectedRouteIds.includes(location.pathname) && <Navbar/>}
+        {protectedRouteIds.includes(match) && <Navbar/>}
         <Outlet/>
         <ScrollRestoration/>
         <Scripts/>

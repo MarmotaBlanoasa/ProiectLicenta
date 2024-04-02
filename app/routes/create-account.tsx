@@ -40,7 +40,7 @@ export const action = async ({request}: ActionFunctionArgs) => {
     if (errors) {
         return json({errors, receivedValues}, {status: 400});
     }
-    const {email, password, businessName, phone, address, confirm_password} = data;
+    const {email, password, businessName, phone, address} = data;
     const redirectTo = safeRedirect('/dashboard', "/");
     const existingUser = await getUserByEmail(email);
     if (existingUser) {

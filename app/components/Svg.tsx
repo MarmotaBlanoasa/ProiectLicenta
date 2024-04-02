@@ -33,6 +33,10 @@ export default function Svg({icon}: { icon: string }) {
             d="M6.63636 4.39718L6.083 4.86949C5.97233 4.99379 5.97233 5.19266 6.083 5.29209L11.0909 9.79153L6.083 14.3158C5.97233 14.4153 5.97233 14.6141 6.083 14.7384L6.63636 15.2107C6.7747 15.335 6.96838 15.335 7.10672 15.2107L12.917 10.0153C13.0277 9.89096 13.0277 9.71695 12.917 9.59266L7.10672 4.39718C6.96838 4.27288 6.7747 4.27288 6.63636 4.39718Z"
             fill="#F0F8FF"/>
     </svg>
+    const plus = <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z" fill="#F0F8FF"/>
+    </svg>
+
 
     switch (icon) {
         case 'dashboard':
@@ -49,6 +53,8 @@ export default function Svg({icon}: { icon: string }) {
             return logout;
         case 'arrow':
             return arrow;
+        case 'plus':
+            return plus;
         default:
             return <></>;
     }

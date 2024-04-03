@@ -8,6 +8,7 @@ import {getValidatedFormData, useRemixForm} from "remix-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Input} from "~/components/ui/ui/input";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "~/components/ui/ui/select";
+import SelectComp from "~/components/ui/Select";
 const schema = zod.object({
     date: zod.date(),
     type: zod.enum(['expense', 'income']),
@@ -53,25 +54,13 @@ export default function AddTransaction() {
             </Header>
             <Form className='flex flex-col gap-4 pt-4' action='/transactions.add-transaction'>
                 <div>
-                    <label htmlFor='date'>Date</label>
-                    <Input type='date' name='date' id='date'/>
+                    {/*<label htmlFor='date'>Date</label>*/}
+                    {/*<Input type='date' name='date' id='date'/>*/}
+                    <DatePicker />
                     {errors.date && <p className='text-destructive'>{errors.date.message}</p>}
                 </div>
                 <div>
-                    <label htmlFor='type'>Type</label>
-                    <Select onValueChange={(value: 'income' | 'expense')=> setValue('type', value)} name='type'>
-                        <option value='expense'>Expense</option>
-                        <option value='income'>Income</option>
-                    </Select>
-                    <Select open={true}>
-                        <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Transaction Type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="expense">Light</SelectItem>
-                            <SelectItem value="income">Dark</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <SelectComp />
                     {errors.type && <p className='text-destructive'>{errors.type.message}</p>}
                 </div>
             </Form>

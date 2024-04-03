@@ -25,6 +25,7 @@ const schema = zod.object({
     businessName: zod.string(),
     phone: zod.string(),
     address: zod.string(),
+    taxInfo: zod.string()
 }).refine(data => data.password === data.confirm_password, {
     message: "Passwords do not match",
     path: ["confirm_password"],
@@ -40,7 +41,7 @@ export const action = async ({request}: ActionFunctionArgs) => {
     if (errors) {
         return json({errors, receivedValues}, {status: 400});
     }
-    const {email, password, businessName, phone, address} = data;
+    const {email, password, businessName, phone, address, taxInfo} = data;
     const redirectTo = safeRedirect('/dashboard', "/");
     const existingUser = await getUserByEmail(email);
     if (existingUser) {
@@ -55,7 +56,7 @@ export const action = async ({request}: ActionFunctionArgs) => {
         );
     }
 
-    const user = await createUser(email, password, businessName, phone, address);
+    const user = await createUser(email, password, businessName, phone, address, taxInfo);
 
     return createUserSession({
         redirectTo,
@@ -67,7 +68,15 @@ export const action = async ({request}: ActionFunctionArgs) => {
 export default function CreateAccount() {
     const {formState: {errors}, handleSubmit, register} = useRemixForm<zod.infer<typeof schema>>({
         resolver,
-        defaultValues: {email: "", password: "", businessName: "", phone: "", address: "", confirm_password: ""}
+        defaultValues: {
+            email: "",
+            password: "",
+            businessName: "",
+            phone: "",
+            address: "",
+            confirm_password: "",
+            taxInfo: ''
+        }
     });
     const actionData = useActionData<ActionFunction>();
     return (
@@ -102,7 +111,8 @@ export default function CreateAccount() {
                                name='confirm_password'
                                placeholder='Confirm Password'
                         />
-                        {errors.confirm_password && <p className='text-destructive'>{errors.confirm_password.message}</p>}
+                        {errors.confirm_password &&
+                            <p className='text-destructive'>{errors.confirm_password.message}</p>}
                     </div>
                     <div>
                         <label htmlFor='businessName'>Business Name</label>
@@ -119,6 +129,11 @@ export default function CreateAccount() {
                         <label htmlFor='address'>Address</label>
                         <Input {...register('address')} id='address' type='text' name='address' placeholder='Address'/>
                         {errors.address && <p className='text-destructive'>{errors.address.message}</p>}
+                    </div>
+                    <div>
+                        <label htmlFor='taxInfo'>Tax Info</label>
+                        <Input {...register('taxInfo')} id='taxInfo' type='text' name='taxInfo' placeholder='Tax Info'/>
+                        {errors.taxInfo && <p className='text-destructive'>{errors.taxInfo.message}</p>}
                     </div>
                     <input type='hidden' name='redirectTo' value='/dashboard'/>
                     <Button type='submit'>Create Account</Button>

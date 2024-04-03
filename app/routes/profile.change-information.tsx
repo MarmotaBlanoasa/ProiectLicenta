@@ -36,7 +36,7 @@ export const action = async ({request}: ActionFunctionArgs) => {
     }
 
     await updateInfoById(userId, businessName, phone, address, taxInfo);
-    return redirect('/profile/information');
+    return redirect('/profile');
 };
 export default function ProfileChangeInformation(){
     const {user} = useRouteData('/') as { user: User };
@@ -72,7 +72,7 @@ export default function ProfileChangeInformation(){
                 </div>
                 <div className='flex gap-4'>
                     <Button type='submit'>Change Information</Button>
-                    <Link to='/profile/information'><Button type='button' variant='outline'>Go Back</Button></Link>
+                    <Link to='/profile'><Button type='button' variant='outline'>Go Back</Button></Link>
                 </div>
                 {actionData?.errors?.critical && <p className='text-destructive'>{actionData.errors.critical}</p>}
             </Form>

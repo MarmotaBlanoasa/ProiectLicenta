@@ -18,7 +18,6 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
     if (!user && isProtectedRoute(url.pathname)) {
         return redirect('/login');
     }
-    console.log('user', user)
     return json({user: user});
 };
 

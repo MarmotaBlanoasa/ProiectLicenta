@@ -7,7 +7,6 @@ export function getAllTransactionsByUser({userId}: { userId: User["id"] }) {
         select: {
             date: true,
             amount: true,
-            description: true,
             type: true,
             category: true,
             paymentMethod: true,
@@ -26,16 +25,10 @@ export function getTransactionById({id, userId}: Pick<Transaction, "id"> & { use
             date: true,
             amount: true,
             type: true,
-            category: true,
             paymentMethod: true,
             payeePayer: true,
             notes: true,
-            category: {
-                select: {
-                    name: true,
-                    type: true
-                }
-            }
+            category: true,
         },
     });
 }
@@ -65,8 +58,44 @@ export function addTransaction({
                     id: userId,
                 },
             },
-            category:{
-                connect:{
+            category: {
+                connect: {
+                    id: categoryId
+                }
+            }
+        },
+    });
+}
+
+export function editTransactionById({
+                                        id,
+                                        userId,
+                                        date,
+                                        type,
+                                        categoryId,
+                                        payeePayer,
+                                        paymentMethod,
+                                        amount,
+                                        notes
+                                    }: Pick<Transaction, 'id' | 'date' | 'type' | 'payeePayer' | 'paymentMethod' | 'amount' | 'notes'> & {
+    userId: User["id"]
+} & { categoryId: Category["id"] }) {
+    return prisma.transaction.update({
+        where: {id},
+        data: {
+            date,
+            type,
+            payeePayer,
+            paymentMethod,
+            amount,
+            notes,
+            user: {
+                connect: {
+                    id: userId,
+                },
+            },
+            category: {
+                connect: {
                     id: categoryId
                 }
             }

@@ -1,5 +1,5 @@
 import Header from "~/components/Header";
-import {Link} from "@remix-run/react";
+import {Link, Outlet, useLocation} from "@remix-run/react";
 import {Button} from "~/components/ui/ui/button";
 import Svg from "~/components/Svg";
 import {json, LoaderFunction, redirect} from "@remix-run/node";
@@ -18,13 +18,18 @@ export const loader: LoaderFunction = async ({request, params}) => {
     if (!userId) {
         return redirect('/login')
     }
-    const transactionDetails = await getTransactionById(transactionId, userId);
+    const transactionDetails = await getTransactionById({id: transactionId, userId});
     return json({transactionDetails});
 }
 
 export default function TransactionsTransactionId() {
-    const {transactionDetails} = useLoaderData() as { transactionDetails: Transaction };
-    console.log(transactionDetails)
+    const {transactionDetails} = useLoaderData() as {
+        transactionDetails: Transaction & { category: { name: string, type: string } }
+    };
+    const url = useLocation();
+    if (url.pathname.includes('edit')) {
+        return <Outlet/>
+    }
     return (
         <>
             <Header title={`Transactions - #${transactionDetails.id}`}>
@@ -66,6 +71,14 @@ export default function TransactionsTransactionId() {
                 <div className='flex flex-col gap-2'>
                     <p className='font-medium'>Notes</p>
                     <p>{transactionDetails.notes}</p>
+                </div>
+                <div className='flex gap-4'>
+                    <Link to={`/transactions/${transactionDetails.id}/edit`}>
+                        <Button>Edit Transaction</Button>
+                    </Link>
+                    <Link to='/transactions'>
+                        <Button variant='outline'>Go Back</Button>
+                    </Link>
                 </div>
             </div>
         </>

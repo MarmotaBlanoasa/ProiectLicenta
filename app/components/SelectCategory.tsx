@@ -1,12 +1,13 @@
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "~/components/ui/ui/select";
 import {Category} from "@prisma/client";
 
-export default function SelectCategory({onValueChange, categories}: {
+export default function SelectCategory({onValueChange, categories, defaultValue}: {
     onValueChange: any,
-    categories: Category[]
+    categories: Category[],
+    defaultValue?: string
 }) {
     return (
-        <Select onValueChange={(value) => onValueChange('categoryId', value)}>
+        <Select defaultValue={defaultValue} onValueChange={(value) => onValueChange('categoryId', value)}>
             <SelectTrigger>
                 <SelectValue placeholder="Select Category"/>
             </SelectTrigger>

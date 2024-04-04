@@ -28,7 +28,7 @@ export default function DatePicker({setValue} : {setValue: any}) {
                     selected={date}
                     onSelect={(date)=> {
                         setDate(date)
-                        setValue('date', date.toISOString())
+                        setValue('date', date?.toISOString())
                     }}
                 />
             </PopoverContent>

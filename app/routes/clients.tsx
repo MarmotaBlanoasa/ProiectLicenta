@@ -1,8 +1,8 @@
-export default function Clients(){
+import {Outlet} from "@remix-run/react";
+export default function Clients() {
     return (
-        <div>
-            <h1>Clients</h1>
-            <p>Here are your clients</p>
+        <div className='ms-[15%] px-12 py-8'>
+            <Outlet />
         </div>
     )
 }

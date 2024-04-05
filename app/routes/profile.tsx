@@ -1,8 +1,9 @@
-export default function Profile(){
+import {Outlet} from "@remix-run/react";
+
+export default function Profile() {
     return (
-        <div>
-            <h1>Profile</h1>
-            <p>Welcome to your profile</p>
+        <div className='ms-[15%] px-12 py-8'>
+            <Outlet/>
         </div>
     )
 }

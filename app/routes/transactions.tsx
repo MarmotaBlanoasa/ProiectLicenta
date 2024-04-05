@@ -1,8 +1,9 @@
-export default function Transactions(){
+import {Outlet} from "@remix-run/react";
+
+export default function Transactions() {
     return (
-        <div>
-            <h1>Transactions</h1>
-            <p>Here are your transactions</p>
+        <div className='ms-[15%] px-12 py-8'>
+            <Outlet/>
         </div>
     )
 }

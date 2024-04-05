@@ -2,8 +2,32 @@ import Header from "~/components/Header";
 import {Link} from "@remix-run/react";
 import {Button} from "~/components/ui/ui/button";
 import Svg from "~/components/Svg";
+import {json, LoaderFunction, redirect} from "@remix-run/node";
+import {getUserId} from "~/session.server";
+import {getAllTransactionsByUser} from "~/models/transaction.server";
+import {Transaction} from "@prisma/client";
+import {useLoaderData} from "react-router";
+import {DataTableTransactions} from "~/components/Transactions/DataTableTransactions";
+import {transactionColumns} from "~/components/Transactions/TransactionColumns";
+
+export const loader: LoaderFunction = async ({request}) => {
+    const userId = await getUserId(request);
+    if (!userId) {
+        return redirect('/login')
+    }
+    const transactions = await getAllTransactionsByUser({userId});
+    const transactionsData = transactions.map(transaction => {
+        return {
+            ...transaction,
+            category: transaction.category?.name || 'Uncategorized'
+        }
+    })
+    return json({transactionsData});
+}
 
 export default function AllTransactions(){
+    const {transactionsData} = useLoaderData() as { transactionsData: Transaction[] };
+    console.log(transactionsData)
     return (
         <>
             <Header title='Transactions'
@@ -18,6 +42,9 @@ export default function AllTransactions(){
                     </Link>
                 </div>
             </Header>
+            <div className='pt-4'>
+                <DataTableTransactions columns={transactionColumns} data={transactionsData} />
+            </div>
         </>
     )
 }

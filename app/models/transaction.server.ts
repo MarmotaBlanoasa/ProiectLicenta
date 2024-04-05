@@ -5,16 +5,18 @@ export function getAllTransactionsByUser({userId}: { userId: User["id"] }) {
     return prisma.transaction.findMany({
         where: {userId},
         select: {
+            id: true,
             date: true,
             amount: true,
             type: true,
-            category: true,
+            category: {select: {name: true}},
             paymentMethod: true,
             payeePayer: true,
             notes: true
         },
         orderBy: {date: 'desc'},
     });
+
 }
 
 export function getTransactionById({id, userId}: Pick<Transaction, "id"> & { userId: User["id"] }) {
@@ -100,5 +102,11 @@ export function editTransactionById({
                 }
             }
         },
+    });
+}
+
+export function deleteTransactionById({id, userId }: Pick<Transaction, "id"> & { userId: User["id"] }) {
+    return prisma.transaction.delete({
+        where: {id, userId}
     });
 }

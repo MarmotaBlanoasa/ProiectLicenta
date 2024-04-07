@@ -7,7 +7,7 @@ import {getUserId} from "~/session.server";
 import {getAllTransactionsByUser} from "~/models/transaction.server";
 import {Transaction} from "@prisma/client";
 import {useLoaderData} from "react-router";
-import {DataTableTransactions} from "~/components/Transactions/DataTableTransactions";
+import {DataTable} from "~/components/DataTable";
 import {transactionColumns} from "~/components/Transactions/TransactionColumns";
 
 export const loader: LoaderFunction = async ({request}) => {
@@ -43,7 +43,7 @@ export default function AllTransactions(){
                 </div>
             </Header>
             <div className='pt-4'>
-                <DataTableTransactions columns={transactionColumns} data={transactionsData} />
+                <DataTable columns={transactionColumns} data={transactionsData} header='TRANSACTIONS'/>
             </div>
         </>
     )

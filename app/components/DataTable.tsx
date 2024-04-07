@@ -11,15 +11,18 @@ import {
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "~/components/ui/ui/table"
 import {useState} from "react";
 import {Input} from "~/components/ui/ui/input";
+import TransactionHeader from "~/components/Transactions/TransactionHeader";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
-    data: TData[]
+    data: TData[],
+    header: 'CLIENTS' | 'TRANSACTIONS' | 'INVOICES'
 }
 
-export function DataTableTransactions<TData, TValue>({
+export function DataTable<TData, TValue>({
                                                          columns,
                                                          data,
+    header
                                                      }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
@@ -40,16 +43,7 @@ export function DataTableTransactions<TData, TValue>({
     })
     return (
         <div>
-            <div className="flex items-center py-4">
-                <Input
-                    placeholder="Filter category..."
-                    value={(table.getColumn("category")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) =>
-                        table.getColumn("category")?.setFilterValue(event.target.value)
-                    }
-                    className="max-w-sm"
-                />
-            </div>
+            {header === 'TRANSACTIONS' && <TransactionHeader table={table}/>}
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>

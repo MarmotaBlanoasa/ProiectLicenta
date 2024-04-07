@@ -49,7 +49,7 @@ export const useRouteData = (routeId: string) => {
   const matches = useMatches();
   const data = matches.find((match) => match.pathname === routeId)?.data;
 
-  return data as Record<string, unknown> || undefined;
+  return data as any;
 };
 
 function isUser(user: unknown): user is User {

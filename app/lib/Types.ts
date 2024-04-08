@@ -27,3 +27,21 @@ export const ClientSchema = zod.object({
     notes: zod.string(),
 });
 export const resolverClient = zodResolver(ClientSchema);
+
+export const lineItemSchema = zod.object({
+    description: zod.string(),
+    quantity: zod.number(),
+    price: zod.number()
+});
+export const invoiceSchema = zod.object({
+    invoiceNumber: zod.string(),
+    dateIssued: zod.string().datetime(),
+    dueDate: zod.string().datetime(),
+    nextBillingDate: zod.string().datetime().optional().nullable(),
+    paidAmount: zod.number(),
+    totalAmount: zod.number(),
+    status: zod.enum(['paid', 'unpaid', 'overdue']),
+    recurring: zod.boolean(),
+    lineItems: zod.array(lineItemSchema)
+});
+export const resolverInvoice = zodResolver(invoiceSchema);

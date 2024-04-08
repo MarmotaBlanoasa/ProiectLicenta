@@ -5,7 +5,7 @@ import { Calendar as CalendarIcon } from "lucide-react"
 import {useState} from "react";
 import {format} from "date-fns";
 import {Calendar} from "~/components/ui/ui/calendar";
-export default function DatePicker({setValue} : {setValue: any}) {
+export default function DatePicker({setValue , valToSet = 'date'} : {setValue: any, valToSet?: string}) {
     const [date, setDate] = useState<Date | undefined>(new Date())
 
     return (
@@ -28,7 +28,7 @@ export default function DatePicker({setValue} : {setValue: any}) {
                     selected={date}
                     onSelect={(date)=> {
                         setDate(date)
-                        setValue('date', date?.toISOString())
+                        setValue(valToSet, date?.toISOString())
                     }}
                 />
             </PopoverContent>

@@ -60,33 +60,18 @@ export default function InvoiceForm({defaultValues}: InvoiceFormProps) {
                 <p className='font-medium'>Due Date</p>
                 <DatePicker setValue={setValue} valToSet='dueDate'/>
             </div>
-            {/*<div>*/}
-            {/*    <p className='font-medium'>Next Billing Date</p>*/}
-            {/*    <DatePicker setValue={setValue} valToSet='nextBillingDate'/>*/}
-            {/*</div>*/}
             <div>
                 <p className='font-medium'>Paid Amount</p>
                 <Input type='number' name='paidAmount' onBlur={(e) => setValue('paidAmount', Number(e.target.value))}
                        id='paidAmount'/>
                 {errors.paidAmount && <p className='text-red-500'>{errors.paidAmount.message}</p>}
             </div>
-            {/*<div>*/}
-            {/*    <p className='font-medium'>Total Amount</p>*/}
-            {/*    <Input type='number' name='totalAmount' onBlur={(e) => setValue('totalAmount', Number(e.target.value))} id='totalAmount'/>*/}
-            {/*    {errors.totalAmount && <p className='text-red-500'>{errors.totalAmount.message}</p>}*/}
-            {/*</div>*/}
             <div>
                 <p className='font-medium'>Status</p>
                 <SelectComp onValueChange={setValue} valToChange='status' placeholder='Select Invoice Status'
                             options={invoiceOptions}/>
                 {errors.status && <p className='text-red-500'>{errors.status.message}</p>}
             </div>
-            {/*<div>*/}
-            {/*    <p className='font-medium'>Recurring</p>*/}
-            {/*    <input type='checkbox' {...register('recurring')} id='recurring'/>*/}
-            {/*    {errors.recurring && <p className='text-red-500'>{errors.recurring.message}</p>}*/}
-            {/*</div>*/}
-
             <h2 className='text-lg font-semibold'>Items/Services</h2>
             <div>
                 <p className='font-medium'>Line Items</p>

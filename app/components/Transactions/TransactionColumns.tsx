@@ -32,7 +32,7 @@ export const transactionColumns: ColumnDef<Transaction>[] = [
         accessorKey: 'type'
     },
     {
-        header: 'Payee/Payer',
+        header: 'Vendor',
         accessorKey: 'payeePayer'
     },
     {

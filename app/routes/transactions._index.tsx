@@ -19,6 +19,7 @@ export const loader: LoaderFunction = async ({request}) => {
     const transactionsData = transactions.map(transaction => {
         return {
             ...transaction,
+            payeePayer: transaction.payeePayer?.name || 'No Vendor',
             category: transaction.category?.name || 'Uncategorized'
         }
     })

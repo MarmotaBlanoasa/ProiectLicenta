@@ -118,3 +118,20 @@ export function deleteTransactionById({id, userId }: Pick<Transaction, "id"> & {
         where: {id, userId}
     });
 }
+
+export function getTransactionsByClientId({id:clientId, userId}: Pick<Client, "id"> & { userId: User["id"] }) {
+    return prisma.transaction.findMany({
+        where: {userId, payeePayerId: clientId},
+        select: {
+            id: true,
+            date: true,
+            amount: true,
+            type: true,
+            category: {select: {name: true}},
+            paymentMethod: true,
+            payeePayerId: true,
+            notes: true
+        },
+        orderBy: {date: 'desc'},
+    });
+}

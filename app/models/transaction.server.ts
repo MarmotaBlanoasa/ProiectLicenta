@@ -1,5 +1,5 @@
 import {prisma} from "~/db.server";
-import {Category, Transaction, User} from "@prisma/client";
+import {Category, Client, Transaction, User} from "@prisma/client";
 
 export function getAllTransactionsByUser({userId}: { userId: User["id"] }) {
     return prisma.transaction.findMany({
@@ -44,14 +44,13 @@ export function addTransaction({
                                    paymentMethod,
                                    amount,
                                    notes
-                               }: Pick<Transaction, 'date' | 'type' | 'payeePayer' | 'paymentMethod' | 'amount' | 'notes'> & {
+                               }: Pick<Transaction, 'date' | 'type'  | 'paymentMethod' | 'amount' | 'notes'> & {
     userId: User["id"]
-} & { categoryId: Category["id"] }) {
+} & { categoryId: Category["id"] } & { payeePayer: Client["id"] }) {
     return prisma.transaction.create({
         data: {
             date,
             type,
-            payeePayer,
             paymentMethod,
             amount,
             notes,
@@ -63,6 +62,11 @@ export function addTransaction({
             category: {
                 connect: {
                     id: categoryId
+                }
+            },
+            payeePayer: {
+                connect: {
+                    id: payeePayer
                 }
             }
         },
@@ -79,15 +83,14 @@ export function editTransactionById({
                                         paymentMethod,
                                         amount,
                                         notes
-                                    }: Pick<Transaction, 'id' | 'date' | 'type' | 'payeePayer' | 'paymentMethod' | 'amount' | 'notes'> & {
+                                    }: Pick<Transaction, 'id' | 'date' | 'type'  | 'paymentMethod' | 'amount' | 'notes'> & {
     userId: User["id"]
-} & { categoryId: Category["id"] }) {
+} & { categoryId: Category["id"] } & { payeePayer: Client["id"] }) {
     return prisma.transaction.update({
         where: {id},
         data: {
             date,
             type,
-            payeePayer,
             paymentMethod,
             amount,
             notes,
@@ -99,6 +102,11 @@ export function editTransactionById({
             category: {
                 connect: {
                     id: categoryId
+                }
+            },
+            payeePayer: {
+                connect: {
+                    id: payeePayer
                 }
             }
         },

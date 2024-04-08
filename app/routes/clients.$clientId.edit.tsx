@@ -37,7 +37,7 @@ export default function ClientsClientIdEdit(){
     const {clientId} = useParams();
     return (
         <>
-            <Header title={`Edit Client`}/>
+            <Header title={`Edit - ${clientDetails.name}`}/>
             <ClientForm defaultValues={clientDetails} clientId={clientId}/>
         </>
     )

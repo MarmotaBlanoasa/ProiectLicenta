@@ -30,15 +30,16 @@ model Password {
 }
 
 model Client {
-  id       String    @id @default(cuid())
-  name     String
-  email    String?
-  phone    String?
-  address  String?
-  notes    String?
-  userId   String
-  user     User      @relation(fields: [userId], references: [id])
-  invoices Invoice[]
+  id           String        @id @default(cuid())
+  name         String
+  email        String?
+  phone        String?
+  address      String?
+  notes        String?
+  userId       String
+  user         User          @relation(fields: [userId], references: [id])
+  invoices     Invoice[]
+  transactions Transaction[]
 }
 
 model Category {
@@ -55,7 +56,8 @@ model Transaction {
   amount        Float
   categoryId    String
   category      Category @relation(fields: [categoryId], references: [id])
-  payeePayer    String?
+  payeePayerId  String?
+  payeePayer    Client?  @relation(fields: [payeePayerId], references: [id])
   paymentMethod String?
   notes         String?
   userId        String

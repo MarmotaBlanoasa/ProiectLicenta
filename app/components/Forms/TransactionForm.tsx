@@ -9,13 +9,14 @@ import {useRemixForm} from "remix-hook-form";
 import * as zod from "zod";
 import {TransactionSchema} from "~/lib/Types";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {Category} from "@prisma/client";
+import {Category, Client} from "@prisma/client";
+import SelectClient from "~/components/Clients/SelectClient";
 
 const resolver = zodResolver(TransactionSchema);
 
 type TransactionFormProps = {
     categories: Category[]
-    action?: string
+    clients: Client[]
     defaultValues: {
         date: string
         type: 'expense' | 'income' | undefined
@@ -28,7 +29,7 @@ type TransactionFormProps = {
     transactionId?: string
 }
 
-export default function TransactionForm({categories, action, defaultValues, transactionId}: TransactionFormProps) {
+export default function TransactionForm({categories, clients, defaultValues, transactionId}: TransactionFormProps) {
     const {
         formState: {errors},
         handleSubmit,
@@ -70,9 +71,9 @@ export default function TransactionForm({categories, action, defaultValues, tran
                 {errors.amount && <p className='text-destructive'>{errors.amount.message}</p>}
             </div>
             <div>
-                <p className='font-medium'>Payee/Payer</p>
-                <Input {...register('payeePayer')} name='payeePayer' id='payeePayer' placeholder='Payee/Payer'/>
-                {errors.payeePayer && <p className='text-destructive'>{errors.payeePayer.message}</p>}
+                <p className='font-medium'>Vendor</p>
+                <SelectClient onValueChange={setValue} clients={clients} defaultValue={defaultValues.payeePayer}/>
+                {errors.paymentMethod && <p className='text-destructive'>{errors.paymentMethod.message}</p>}
             </div>
             <div>
                 <p className='font-medium'>Payment Method</p>

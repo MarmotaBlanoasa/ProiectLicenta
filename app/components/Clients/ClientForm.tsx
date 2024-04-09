@@ -1,4 +1,4 @@
-import {Form, Link, useActionData, useLocation, useNavigation} from "@remix-run/react";
+import {Form, Link, useActionData, useLocation, useNavigate, useNavigation} from "@remix-run/react";
 import {Input} from "~/components/ui/ui/input";
 import {Textarea} from "~/components/ui/ui/textarea";
 import {Button} from "~/components/ui/ui/button";
@@ -27,6 +27,7 @@ export default function ClientForm({action, defaultValues, clientId}: ClientForm
         defaultValues: defaultValues,
     });
     const navigation = useNavigation();
+    const navigate = useNavigate();
     const isSubmitting = navigation.state !== 'idle';
     const actionData = useActionData<ActionFunction>();
     return(
@@ -60,7 +61,7 @@ export default function ClientForm({action, defaultValues, clientId}: ClientForm
             {actionData?.errors?.critical && <p className='text-destructive'>{actionData.errors.critical}</p>}
             <div className='flex gap-4'>
                 <Button type='submit' disabled={isSubmitting}>{isEdit? 'Edit' : 'Add'} New Client</Button>
-                <Link to={isEdit? `/clients/${clientId}` : `/clients`}><Button type='button' variant='outline'>Go Back</Button></Link>
+                <Button type='button' variant='outline' onClick={()=> navigate(-1)}>Go Back</Button>
             </div>
         </Form>
     )

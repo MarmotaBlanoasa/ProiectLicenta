@@ -4,7 +4,7 @@ import SelectComp from "~/components/Select";
 import SelectCategory from "~/components/SelectCategory";
 import {Textarea} from "~/components/ui/ui/textarea";
 import {Button} from "~/components/ui/ui/button";
-import {Form, Link, useLocation, useNavigation} from "@remix-run/react";
+import {Form, useLocation, useNavigate, useNavigation} from "@remix-run/react";
 import {useRemixForm} from "remix-hook-form";
 import * as zod from "zod";
 import {TransactionSchema} from "~/lib/Types";
@@ -42,6 +42,7 @@ export default function TransactionForm({categories, clients, defaultValues, tra
     });
     const location = useLocation();
     const navigation = useNavigation()
+    const navigate = useNavigate()
     const loading = navigation.state !== 'idle'
     const isEdit = location.pathname.includes('edit')
     const optionsTransactionType = [{value: 'expense', text: 'Expense'}, {value: 'income', text: 'Income'}]
@@ -102,8 +103,7 @@ export default function TransactionForm({categories, clients, defaultValues, tra
             </div>
             <div className='flex gap-4'>
                 <Button disabled={loading} type='submit'>{isEdit ? 'Edit' : 'Add'} Transaction</Button>
-                <Link to={isEdit ? `/transactions/${transactionId}` : `/transactions`}><Button variant='outline'>Go
-                    Back</Button></Link>
+                <Button type='button' variant='outline' onClick={()=> navigate(-1)}>Go Back</Button>
             </div>
         </Form>
     )

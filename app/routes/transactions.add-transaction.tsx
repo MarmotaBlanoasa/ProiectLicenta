@@ -7,7 +7,7 @@ import {getAllCategories} from "~/models/category.server";
 import {useLoaderData} from "react-router";
 import {addTransaction} from "~/models/transaction.server";
 import {Category, Client} from "@prisma/client";
-import TransactionForm from "~/components/Forms/TransactionForm";
+import TransactionForm from "~/components/Transactions/TransactionForm";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {TransactionSchema} from "~/lib/Types";
 import {getAllClientsByUser} from "~/models/client.server";

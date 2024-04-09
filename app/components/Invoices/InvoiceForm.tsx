@@ -7,6 +7,8 @@ import DatePicker from "~/components/DatePicker";
 import SelectComp from "~/components/Select";
 import {Button} from "~/components/ui/ui/button";
 import {useState} from "react";
+import { Client } from "@prisma/client";
+import SelectClient from "~/components/Clients/SelectClient";
 
 type InvoiceFormProps = {
     defaultValues: {
@@ -15,7 +17,6 @@ type InvoiceFormProps = {
         dueDate: string
         nextBillingDate: string | null
         paidAmount: number
-        totalAmount: number
         status: 'paid' | 'unpaid' | 'overdue'
         recurring: boolean
         lineItems: {
@@ -23,11 +24,12 @@ type InvoiceFormProps = {
             quantity: number
             price: number
         }[]
-    }
+    },
+    clients: Client[]
 
 }
 
-export default function InvoiceForm({defaultValues}: InvoiceFormProps) {
+export default function InvoiceForm({defaultValues, clients}: InvoiceFormProps) {
     const {
         formState: {errors},
         handleSubmit,
@@ -53,6 +55,10 @@ export default function InvoiceForm({defaultValues}: InvoiceFormProps) {
                 {errors.invoiceNumber && <p className='text-red-500'>{errors.invoiceNumber.message}</p>}
             </div>
             <div>
+                <p className='font-medium'>Vendor</p>
+                <SelectClient onValueChange={setValue} clients={clients} />
+            </div>
+            <div>
                 <p className='font-medium'>Date Issued</p>
                 <DatePicker setValue={setValue} valToSet='dateIssued'/>
             </div>
@@ -63,7 +69,7 @@ export default function InvoiceForm({defaultValues}: InvoiceFormProps) {
             <div>
                 <p className='font-medium'>Paid Amount</p>
                 <Input type='number' name='paidAmount' onBlur={(e) => setValue('paidAmount', Number(e.target.value))}
-                       id='paidAmount'/>
+                       id='paidAmount' placeholder='Paid Amount'/>
                 {errors.paidAmount && <p className='text-red-500'>{errors.paidAmount.message}</p>}
             </div>
             <div>
@@ -75,7 +81,7 @@ export default function InvoiceForm({defaultValues}: InvoiceFormProps) {
             <h2 className='text-lg font-semibold'>Items/Services</h2>
             <div>
                 <p className='font-medium'>Line Items</p>
-                {watch().lineItems.map((item, index) => (
+                {watch().lineItems.map((_, index) => (
                     <div key={index} className='flex gap-4'>
                         <Input type='text'  {...register(`lineItems.${index}.description`)}
                                id={`lineItems.${index}.description`} placeholder='Description'/>
@@ -118,7 +124,7 @@ export default function InvoiceForm({defaultValues}: InvoiceFormProps) {
                 <div>
                     <p className='font-medium'>Total</p>
                     <Input type='number'
-                           value={watch().lineItems.reduce((acc, item) => acc + item.quantity * item.price, 0) * (1 + taxes / 100) - (1 + Math.abs(discount) / 100)}
+                           value={watch().lineItems.reduce((acc, item) => acc + item.quantity * item.price, 0) * (1 + taxes / 100) - (1 + discount / 100)}
                            readOnly/>
                 </div>
             </div>

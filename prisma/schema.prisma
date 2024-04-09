@@ -37,7 +37,7 @@ model Client {
   address      String?
   notes        String?
   userId       String
-  user         User          @relation(fields: [userId], references: [id])
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   invoices     Invoice[]
   transactions Transaction[]
 }
@@ -55,13 +55,13 @@ model Transaction {
   type          String
   amount        Float
   categoryId    String
-  category      Category @relation(fields: [categoryId], references: [id])
+  category      Category @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   payeePayerId  String?
-  payeePayer    Client?  @relation(fields: [payeePayerId], references: [id])
+  payeePayer    Client?  @relation(fields: [payeePayerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   paymentMethod String?
   notes         String?
   userId        String
-  user          User     @relation(fields: [userId], references: [id])
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Invoice {
@@ -75,9 +75,9 @@ model Invoice {
   recurring       Boolean    @default(false)
   nextBillingDate DateTime?
   clientId        String
-  client          Client     @relation(fields: [clientId], references: [id])
+  client          Client     @relation(fields: [clientId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId          String
-  user            User       @relation(fields: [userId], references: [id])
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   lineItems       LineItem[]
 }
 
@@ -87,5 +87,5 @@ model LineItem {
   quantity    Int
   price       Float
   invoiceId   String
-  invoice     Invoice @relation(fields: [invoiceId], references: [id])
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }

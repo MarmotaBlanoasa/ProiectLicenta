@@ -38,8 +38,8 @@ export const invoiceSchema = zod.object({
     dateIssued: zod.string().datetime(),
     dueDate: zod.string().datetime(),
     nextBillingDate: zod.string().datetime().optional().nullable(),
+    payeePayer: zod.string(),
     paidAmount: zod.number(),
-    totalAmount: zod.number(),
     status: zod.enum(['paid', 'unpaid', 'overdue']),
     recurring: zod.boolean(),
     lineItems: zod.array(lineItemSchema)

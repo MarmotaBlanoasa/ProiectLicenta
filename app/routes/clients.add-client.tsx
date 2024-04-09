@@ -5,7 +5,7 @@ import {getValidatedFormData, useRemixForm} from "remix-hook-form";
 import {getUserId} from "~/session.server";
 import {addClient} from "~/models/client.server";
 import {ClientSchema, resolverClient as resolver} from "~/lib/Types";
-import ClientForm from "~/components/Forms/ClientForm";
+import ClientForm from "~/components/Clients/ClientForm";
 
 export const action = async ({request}: ActionFunctionArgs) => {
     const {receivedValues, errors, data} = await getValidatedFormData<zod.infer<typeof ClientSchema>>(request, resolver);

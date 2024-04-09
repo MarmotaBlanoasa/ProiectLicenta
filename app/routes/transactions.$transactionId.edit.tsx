@@ -1,7 +1,7 @@
 import Header from "~/components/Header";
 import {ActionFunctionArgs, json, LoaderFunction, redirect} from "@remix-run/node";
 import {getAllCategories} from "~/models/category.server";
-import TransactionForm from "~/components/Forms/TransactionForm";
+import TransactionForm from "~/components/Transactions/TransactionForm";
 import {useLoaderData} from "react-router";
 import {Category, Transaction} from "@prisma/client";
 import {getValidatedFormData} from "remix-hook-form";

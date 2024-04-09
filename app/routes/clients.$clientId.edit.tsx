@@ -3,7 +3,7 @@ import {json, LoaderFunction, redirect} from "@remix-run/node";
 import {getUserId} from "~/session.server";
 import {getClientById} from "~/models/client.server";
 import {useLoaderData, useParams} from "react-router";
-import ClientForm from "~/components/Forms/ClientForm";
+import ClientForm from "~/components/Clients/ClientForm";
 type ClientDetails = {
     name: string
     email: string

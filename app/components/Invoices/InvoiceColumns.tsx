@@ -31,8 +31,8 @@ export const invoiceColumns: ColumnDef<Invoice>[] =
                 return (
                     <div>
                         <span
-                            className={`px-2 py-1 rounded-full text-xs ${status === 'Paid' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
-                            {status}
+                            className={`px-2 py-1 rounded-full text-xs ${status === 'paid' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+                            {status.toUpperCase()}
                         </span>
                     </div>
                 )

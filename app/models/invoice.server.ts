@@ -78,7 +78,7 @@ export function editInvoice({
                                 paidAmount,
                                 totalAmount,
                                 status,
-                                recurring
+                                recurring,
                             }: Pick<Invoice, 'id' | 'invoiceNumber' | 'dateIssued' | 'dueDate' | 'status' | 'nextBillingDate' | 'paidAmount' | 'totalAmount' | 'recurring'> & {
     userId: User["id"]
 } & { clientId: Client['id'] }) {

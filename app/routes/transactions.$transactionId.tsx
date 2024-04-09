@@ -6,7 +6,7 @@ import {json, LoaderFunction, redirect} from "@remix-run/node";
 import {useLoaderData} from "react-router";
 import {getTransactionById} from "~/models/transaction.server";
 import {getUserId} from "~/session.server";
-import {Transaction} from "@prisma/client";
+import {Client, Transaction} from "@prisma/client";
 import {format} from "date-fns";
 
 export const loader: LoaderFunction = async ({request, params}) => {
@@ -24,8 +24,9 @@ export const loader: LoaderFunction = async ({request, params}) => {
 
 export default function TransactionsTransactionId() {
     const {transactionDetails} = useLoaderData() as {
-        transactionDetails: Transaction & { category: { name: string, type: string } }
+        transactionDetails: Transaction & { category: { name: string, type: string } } & {payeePayer: {id: string, name:string}}
     };
+    console.log(transactionDetails)
     const url = useLocation();
     if (url.pathname.includes('edit')) {
         return <Outlet/>
@@ -66,7 +67,7 @@ export default function TransactionsTransactionId() {
                 </div>
                 <div className='flex flex-col gap-2'>
                     <p className='font-medium'>Payee/Payer</p>
-                    <p>{transactionDetails.payeePayer}</p>
+                    <p>{transactionDetails.payeePayer.name}</p>
                 </div>
                 <div className='flex flex-col gap-2'>
                     <p className='font-medium'>Notes</p>

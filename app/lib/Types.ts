@@ -10,6 +10,23 @@ export type User = {
     taxInfo: string;
 };
 
+export type DefaultValuesInvoice = {
+    invoiceNumber: string;
+    dateIssued: string;
+    dueDate: string;
+    nextBillingDate: string | null;
+    payeePayer: string;
+    paidAmount: number;
+    totalAmount: number;
+    status: 'paid' | 'unpaid' | 'overdue';
+    recurring: boolean;
+    lineItems: {
+        description: string;
+        quantity: number;
+        price: number;
+    }[];
+};
+
 export const TransactionSchema = zod.object({
     date: zod.string().datetime(),
     type: zod.enum(['expense', 'income']),
@@ -40,6 +57,7 @@ export const invoiceSchema = zod.object({
     nextBillingDate: zod.string().datetime().optional().nullable(),
     payeePayer: zod.string(),
     paidAmount: zod.number(),
+    totalAmount: zod.number(),
     status: zod.enum(['paid', 'unpaid', 'overdue']),
     recurring: zod.boolean(),
     lineItems: zod.array(lineItemSchema)

@@ -3,13 +3,14 @@ import {ActionFunctionArgs, json, LoaderFunction, redirect} from "@remix-run/nod
 import {getAllCategories} from "~/models/category.server";
 import TransactionForm from "~/components/Transactions/TransactionForm";
 import {useLoaderData} from "react-router";
-import {Category, Transaction} from "@prisma/client";
+import {Category, Client, Transaction} from "@prisma/client";
 import {getValidatedFormData} from "remix-hook-form";
 import * as zod from "zod";
 import {TransactionSchema} from "~/lib/Types";
 import {getUserId} from "~/session.server";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {editTransactionById, getTransactionById} from "~/models/transaction.server";
+import {getAllClientsByUser} from "~/models/client.server";
 
 const resolver = zodResolver(TransactionSchema);
 
@@ -23,8 +24,9 @@ export const loader: LoaderFunction = async ({request, params}) => {
         return redirect('/login')
     }
     const transactionDetails = await getTransactionById({id: transactionId, userId});
+    const clients = await getAllClientsByUser({userId});
     const categories = await getAllCategories();
-    return json({categories, transactionDetails});
+    return json({categories, transactionDetails, clients});
 }
 export const action = async ({request, params}: ActionFunctionArgs) => {
     const {
@@ -68,15 +70,16 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
 }
 
 export default function TransactionsTransactionIdEdit() {
-    const {categories, transactionDetails} = useLoaderData() as {
+    const {categories, transactionDetails, clients} = useLoaderData() as {
         categories: Category[],
-        transactionDetails: Transaction & { category: Category }
+        transactionDetails: Transaction & { category: Category } & { payeePayer: { id: string, name: string } }
+        clients: Client[]
     }
     const defaultValues = {
         date: new Date(transactionDetails.date).toISOString(),
         type: transactionDetails.type as 'expense' | 'income' | undefined,
         categoryId: transactionDetails.category.id,
-        payeePayer: transactionDetails.payeePayer || '',
+        payeePayer: transactionDetails.payeePayer.id || '',
         paymentMethod: transactionDetails.paymentMethod || '',
         amount: transactionDetails.amount,
         notes: transactionDetails.notes || undefined
@@ -85,7 +88,7 @@ export default function TransactionsTransactionIdEdit() {
         <>
             <Header title={`Edit Transaction - #${transactionDetails.id}`}
                     description={'Edit the details of this transaction.'}/>
-            <TransactionForm categories={categories} defaultValues={defaultValues}
+            <TransactionForm categories={categories} defaultValues={defaultValues} clients={clients}
                              transactionId={transactionDetails.id}/>
         </>
     )

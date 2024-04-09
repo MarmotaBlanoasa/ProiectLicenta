@@ -33,3 +33,8 @@ export function getLineItemByInvoiceId({invoiceId}: {invoiceId: Invoice['id']}) 
         where: {invoiceId},
     });
 }
+export function deleteLineItemByInvoiceId({invoiceId}: {invoiceId: Invoice['id']}) {
+    return prisma.lineItem.deleteMany({
+        where: {invoiceId},
+    });
+}

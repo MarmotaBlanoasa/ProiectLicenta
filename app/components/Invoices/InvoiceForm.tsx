@@ -1,30 +1,17 @@
 import {useRemixForm} from "remix-hook-form";
 import * as zod from "zod";
-import {invoiceSchema, resolverInvoice as resolver} from "~/lib/Types";
+import {DefaultValuesInvoice, invoiceSchema, resolverInvoice as resolver} from "~/lib/Types";
 import {Form} from "@remix-run/react";
 import {Input} from "~/components/ui/ui/input";
 import DatePicker from "~/components/DatePicker";
 import SelectComp from "~/components/Select";
 import {Button} from "~/components/ui/ui/button";
-import {useState} from "react";
-import { Client } from "@prisma/client";
+import {useEffect, useState} from "react";
+import {Client} from "@prisma/client";
 import SelectClient from "~/components/Clients/SelectClient";
 
 type InvoiceFormProps = {
-    defaultValues: {
-        invoiceNumber: string
-        dateIssued: string
-        dueDate: string
-        nextBillingDate: string | null
-        paidAmount: number
-        status: 'paid' | 'unpaid' | 'overdue'
-        recurring: boolean
-        lineItems: {
-            description: string
-            quantity: number
-            price: number
-        }[]
-    },
+    defaultValues: DefaultValuesInvoice
     clients: Client[]
 
 }
@@ -46,6 +33,11 @@ export default function InvoiceForm({defaultValues, clients}: InvoiceFormProps) 
         value: 'overdue',
         text: 'Overdue'
     }]
+    const {lineItems} = watch()
+    const totalValue = lineItems.reduce((acc, item) => acc + item.quantity * item.price, 0) * (1 + taxes / 100) - (1 + discount / 100)
+    useEffect(() => {
+        setValue('totalAmount', totalValue)
+    }, [totalValue])
     return (
         <Form className='flex flex-col gap-4 pt-4 w-1/3' onSubmit={handleSubmit}>
             <h2 className='text-lg font-semibold'>Invoice Details</h2>
@@ -56,7 +48,7 @@ export default function InvoiceForm({defaultValues, clients}: InvoiceFormProps) 
             </div>
             <div>
                 <p className='font-medium'>Vendor</p>
-                <SelectClient onValueChange={setValue} clients={clients} />
+                <SelectClient onValueChange={setValue} clients={clients} defaultValue={defaultValues.payeePayer}/>
             </div>
             <div>
                 <p className='font-medium'>Date Issued</p>
@@ -69,34 +61,37 @@ export default function InvoiceForm({defaultValues, clients}: InvoiceFormProps) 
             <div>
                 <p className='font-medium'>Paid Amount</p>
                 <Input type='number' name='paidAmount' onBlur={(e) => setValue('paidAmount', Number(e.target.value))}
-                       id='paidAmount' placeholder='Paid Amount'/>
+                       id='paidAmount' placeholder='Paid Amount' defaultValue={defaultValues.paidAmount}/>
                 {errors.paidAmount && <p className='text-red-500'>{errors.paidAmount.message}</p>}
             </div>
             <div>
                 <p className='font-medium'>Status</p>
                 <SelectComp onValueChange={setValue} valToChange='status' placeholder='Select Invoice Status'
-                            options={invoiceOptions}/>
+                            options={invoiceOptions} defaultValue={defaultValues.status}/>
                 {errors.status && <p className='text-red-500'>{errors.status.message}</p>}
             </div>
             <h2 className='text-lg font-semibold'>Items/Services</h2>
             <div>
                 <p className='font-medium'>Line Items</p>
-                {watch().lineItems.map((_, index) => (
+                {lineItems.map((item, index) => (
                     <div key={index} className='flex gap-4'>
                         <Input type='text'  {...register(`lineItems.${index}.description`)}
+                               defaultValue={item.description}
                                id={`lineItems.${index}.description`} placeholder='Description'/>
-                        <Input type='number'
+                        <Input type='number' defaultValue={item.quantity}
                                onBlur={(e) => setValue(`lineItems.${index}.quantity`, Number(e.target.value))}
                                id={`lineItems.${index}.quantity`} placeholder='Quantity'/>
-                        <Input type='number'
-                               onBlur={(e) => setValue(`lineItems.${index}.price`, Number(e.target.value))}
+                        <Input type='number' defaultValue={item.price}
+                               onBlur={(e) => {
+                                   setValue(`lineItems.${index}.price`, Number(e.target.value))
+                               }}
                                id={`lineItems.${index}.price`} placeholder='Price'/>
                         {index > 0 && <Button variant='ghost' type='button'
-                                              onClick={() => setValue('lineItems', watch().lineItems.filter((_, i) => i !== index))}>Remove</Button>}
+                                              onClick={() => setValue('lineItems', lineItems.filter((_, i) => i !== index))}>Remove</Button>}
                     </div>
                 ))}
                 {errors.lineItems && <p className='text-red-500'>{errors.lineItems.message}</p>}
-                <Button variant='link' type='button' onClick={() => setValue('lineItems', [...watch().lineItems, {
+                <Button variant='link' type='button' onClick={() => setValue('lineItems', [...lineItems, {
                     description: '',
                     quantity: 0,
                     price: 0
@@ -124,7 +119,8 @@ export default function InvoiceForm({defaultValues, clients}: InvoiceFormProps) 
                 <div>
                     <p className='font-medium'>Total</p>
                     <Input type='number'
-                           value={watch().lineItems.reduce((acc, item) => acc + item.quantity * item.price, 0) * (1 + taxes / 100) - (1 + discount / 100)}
+                           id='totalAmount' placeholder='Total Amount'
+                           value={totalValue}
                            readOnly/>
                 </div>
             </div>

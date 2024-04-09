@@ -30,19 +30,19 @@ export const action: ActionFunction = async ({request}) => {
         dateIssued,
         dueDate,
         paidAmount,
+        totalAmount,
         status,
         recurring,
         payeePayer,
         lineItems
     } = data
-    const totalAmountNumber = lineItems.reduce((acc, item) => acc + item.quantity * item.price, 0)
     const invoiceId = await addInvoice({
         userId,
         clientId: payeePayer,
         invoiceNumber,
         recurring,
         status,
-        totalAmount:totalAmountNumber,
+        totalAmount,
         paidAmount,
         nextBillingDate: null,
         dateIssued: new Date(dateIssued),
@@ -79,6 +79,7 @@ export default function InvoicesAddInvoice() {
         nextBillingDate: null,
         payeePayer: '',
         paidAmount: 0,
+        totalAmount: 0,
         status: 'unpaid' as 'paid' | 'unpaid' | 'overdue',
         recurring: false,
         lineItems: [{description: '', quantity: 0, price: 0}]

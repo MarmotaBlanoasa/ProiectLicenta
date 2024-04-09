@@ -26,10 +26,9 @@ type TransactionFormProps = {
         amount: number
         notes?: string
     },
-    transactionId?: string
 }
 
-export default function TransactionForm({categories, clients, defaultValues, transactionId}: TransactionFormProps) {
+export default function TransactionForm({categories, clients, defaultValues}: TransactionFormProps) {
     const {
         formState: {errors},
         handleSubmit,

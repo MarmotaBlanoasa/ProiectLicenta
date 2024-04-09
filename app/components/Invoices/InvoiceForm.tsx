@@ -1,7 +1,7 @@
 import {useRemixForm} from "remix-hook-form";
 import * as zod from "zod";
 import {DefaultValuesInvoice, invoiceSchema, resolverInvoice as resolver} from "~/lib/Types";
-import {Form, useNavigate, useNavigation} from "@remix-run/react";
+import {Form, useLocation, useNavigate, useNavigation} from "@remix-run/react";
 import {Input} from "~/components/ui/ui/input";
 import DatePicker from "~/components/DatePicker";
 import SelectComp from "~/components/Select";
@@ -40,6 +40,8 @@ export default function InvoiceForm({defaultValues, clients}: InvoiceFormProps) 
     }, [totalValue])
     const navigation = useNavigation();
     const navigate = useNavigate()
+    const location = useLocation()
+    const isEdit = location.pathname.includes('edit')
     const isSubmitting = navigation.state !== 'idle';
     return (
         <Form className='flex flex-col gap-4 pt-4 w-1/3' onSubmit={handleSubmit}>
@@ -128,7 +130,7 @@ export default function InvoiceForm({defaultValues, clients}: InvoiceFormProps) 
                 </div>
             </div>
             <div className='flex gap-4'>
-                <Button type='submit' disabled={isSubmitting}>Save Invoice</Button>
+                <Button type='submit' disabled={isSubmitting}>{isEdit? 'Edit' : 'Add'} Invoice</Button>
                 <Button type='button' variant='outline' onClick={()=> navigate(-1)}>Go back</Button>
             </div>
         </Form>

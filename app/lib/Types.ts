@@ -29,10 +29,11 @@ export type DefaultValuesInvoice = {
 
 export const BillSchema = zod.object({
     date: zod.string().datetime(),
-    categoryId: zod.string(),
-    payeePayer: zod.string(),
-    paymentMethod: zod.string(),
-    amount: zod.number(),
+    dueDate: zod.string().datetime(),
+    categoryId: zod.string().min(1, 'Please select a category').max(100),
+    vendor: zod.string().min(1, 'Please select a vendor').max(100),
+    paymentMethod: zod.string().min(1, 'Please select a payment method').max(100),
+    amount: zod.number().min(0.01, 'Amount must be greater than 0'),
     notes: zod.string().optional(),
 });
 export const ClientSchema = zod.object({

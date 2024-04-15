@@ -14,7 +14,7 @@ export default function SelectCategory({onValueChange, categories, defaultValue}
             <SelectContent>
                 {categories.map((category, index) => (
                     <SelectItem key={index} value={category.id}>
-                        {category.name} - {category.type}
+                        {category.name}
                     </SelectItem>
                 ))}
             </SelectContent>

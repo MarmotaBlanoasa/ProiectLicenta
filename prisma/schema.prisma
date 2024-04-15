@@ -68,6 +68,7 @@ model Category {
 model Bill {
   id            String   @id @default(cuid())
   date          DateTime
+  dueDate       DateTime
   amount        Float
   categoryId    String
   category      Category @relation(fields: [categoryId], references: [id])

@@ -19,7 +19,8 @@ type BillFormProps = {
     categories: Category[]
     vendors: Vendor[]
     defaultValues: {
-        date: string
+        date: string,
+        dueDate: string,
         categoryId: string
         vendor: string
         paymentMethod: string
@@ -60,6 +61,11 @@ export default function BillForm({categories, vendors, defaultValues}: BillFormP
                 {errors.date && <p className='text-destructive'>{errors.date.message}</p>}
             </div>
             <div>
+                <p className='font-medium'>Due Date</p>
+                <DatePicker setValue={setValue} valToSet='dueDate'/>
+                {errors.dueDate && <p className='text-destructive'>{errors.dueDate.message}</p>}
+            </div>
+            <div>
                 <p className='font-medium'>Amount - $</p>
                 <Input defaultValue={defaultValues.amount} onBlur={(e) => setValue('amount', Number(e.target.value))}
                        id='amount' type='number'
@@ -69,7 +75,7 @@ export default function BillForm({categories, vendors, defaultValues}: BillFormP
             <div>
                 <p className='font-medium'>Vendor</p>
                 <SelectClientOrVendor onValueChange={setValue} vendors={vendors} defaultValue={defaultValues.vendor} valToChange='vendor'/>
-                {errors.paymentMethod && <p className='text-destructive'>{errors.paymentMethod.message}</p>}
+                {errors.vendor && <p className='text-destructive'>{errors.vendor.message}</p>}
             </div>
             <div>
                 <p className='font-medium'>Payment Method</p>

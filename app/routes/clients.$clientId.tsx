@@ -1,14 +1,11 @@
 import {json, LoaderFunction, redirect} from "@remix-run/node";
 import {getUserId} from "~/session.server";
 import {Link, Outlet, useLoaderData, useLocation} from "@remix-run/react";
-import {Client, Bill} from "@prisma/client";
+import {Bill, Client} from "@prisma/client";
 import Header from "~/components/Header";
 import {getClientById} from "~/models/client.server";
 import {Button} from "~/components/ui/ui/button";
 import Svg from "~/components/Svg";
-import {getBillsByClientId} from "~/models/bill.server";
-import {DataTable} from "~/components/DataTable";
-import {billColumns} from "~/components/Bills/BillColumns";
 
 export const loader: LoaderFunction = async ({request, params}) => {
     const userId = await getUserId(request);
@@ -20,15 +17,8 @@ export const loader: LoaderFunction = async ({request, params}) => {
         return redirect('/login')
     }
     const clientDetails = await getClientById({id: clientId, userId});
-    const clientTransactions = await getBillsByClientId({id: clientId, userId}) || [];
-    const formatClientTransactions = clientTransactions && clientTransactions.map(bill => {
-        return {
-            ...bill,
-            payeePayer: clientDetails?.name || 'No Vendor',
-            category: bill.category?.name || 'Uncategorized'
-        }
-    })
-    return json({clientDetails, formatClientTransactions});
+    //TODO: ADD INVOICES
+    return json({clientDetails});
 }
 export default function ClientsClientId() {
     const location = useLocation();
@@ -72,10 +62,6 @@ export default function ClientsClientId() {
                     <p className='font-medium'>Notes</p>
                     <p className=''>{clientDetails.notes}</p>
                 </div>
-            </div>
-            <div className='pt-4'>
-                <h2 className='text-lg font-medium'>Transactions</h2>
-                <DataTable columns={billColumns} data={formatClientTransactions} header='TRANSACTIONS'/>
             </div>
             <div className='pt-4'>
                 <h2 className='text-lg font-medium'>Invoices</h2>

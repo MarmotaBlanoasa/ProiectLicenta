@@ -13,7 +13,7 @@ export default function Navbar(){
             <div className='flex flex-col gap-4'>
                 <NavLink to='/dashboard' name='Dashboard' icon='dashboard'/>
                 <NavLink to='/clients' name='Clients' icon='clients'/>
-                <NavLink to='/transactions' name='Transactions' icon='transactions'/>
+                <NavLink to='/bills' name='Bills' icon='transactions'/>
                 <NavLink to='/invoices' name='Invoices' icon='invoices'/>
                 <NavLink to='/profile' name='Profile' icon='profile'/>
             </div>

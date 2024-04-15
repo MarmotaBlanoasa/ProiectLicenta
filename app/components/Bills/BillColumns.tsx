@@ -28,12 +28,21 @@ export const billColumns: ColumnDef<Bill>[] = [
         size: 200
     },
     {
-        header: 'Type',
-        accessorKey: 'type'
+        header: ({column}) =>{
+            return(
+                <Button variant='ghost' onClick={()=> column.toggleSorting(column.getIsSorted() === 'asc')}>
+                    Due Date
+                    <ArrowUpDown className='ml-2 h-4 w-4' />
+                </Button>
+            )
+        },
+        accessorKey: 'dueDate',
+        cell: ({row}) => <div className='px-4'>{format(row.original.dueDate, 'PPP')}</div>,
+        size: 200
     },
     {
         header: 'Vendor',
-        accessorKey: 'payeePayer'
+        accessorKey: 'vendor'
     },
     {
         header: 'Category',
@@ -68,13 +77,13 @@ export const billColumns: ColumnDef<Bill>[] = [
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator/>
                             <DropdownMenuItem><Link to={`/transactions/${transaction.id}`}>View
-                                Transaction</Link></DropdownMenuItem>
+                                Bill</Link></DropdownMenuItem>
                             <DropdownMenuItem>
-                                <Link to={`/transactions/${transaction.id}/edit`}>Edit Transaction</Link>
+                                <Link to={`/transactions/${transaction.id}/edit`}>Edit Bill</Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
                                 <Link to={`/transactions/${transaction.id}/delete`}>
-                                    Delete Transaction
+                                    Delete Bill
                                 </Link>
                             </DropdownMenuItem>
                         </DropdownMenuContent>

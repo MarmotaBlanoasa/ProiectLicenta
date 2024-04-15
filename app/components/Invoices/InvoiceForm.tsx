@@ -8,8 +8,7 @@ import SelectComp from "~/components/Select";
 import {Button} from "~/components/ui/ui/button";
 import {useEffect, useState} from "react";
 import {Client} from "@prisma/client";
-import SelectClient from "~/components/SelectClientOrVendor";
-import {MinusIcon} from "lucide-react";
+import SelectClientOrVendor from "~/components/SelectClientOrVendor";
 
 type InvoiceFormProps = {
     defaultValues: DefaultValuesInvoice
@@ -54,7 +53,8 @@ export default function InvoiceForm({defaultValues, clients}: InvoiceFormProps) 
             </div>
             <div className='w-1/3'>
                 <p className='font-medium'>Vendor</p>
-                <SelectClient onValueChange={setValue} clients={clients} defaultValue={defaultValues.payeePayer}/>
+                <SelectClientOrVendor onValueChange={setValue} clients={clients} defaultValue={defaultValues.payeePayer}
+                                      valToChange='payeePayer'/>
             </div>
             <div className='w-1/3'>
                 <p className='font-medium'>Date Issued</p>
@@ -81,21 +81,21 @@ export default function InvoiceForm({defaultValues, clients}: InvoiceFormProps) 
                 <p className='font-medium'>Line Items</p>
                 <div className='flex flex-col gap-4 items-start pt-2'>
                     {lineItems.map((item, index) => (
-                            <div className='flex gap-4' key={index}>
-                                <Input type='text'  {...register(`lineItems.${index}.description`)}
-                                       defaultValue={item.description}
-                                       id={`lineItems.${index}.description`} placeholder='Description'/>
-                                <Input type='number' defaultValue={item.quantity}
-                                       onBlur={(e) => setValue(`lineItems.${index}.quantity`, Number(e.target.value))}
-                                       id={`lineItems.${index}.quantity`} placeholder='Quantity'/>
-                                <Input type='number' defaultValue={item.price}
-                                       onBlur={(e) => {
-                                           setValue(`lineItems.${index}.price`, Number(e.target.value))
-                                       }}
-                                       id={`lineItems.${index}.price`} placeholder='Price'/>
-                                {index > 0 && <Button variant='link' type='button'
-                                                      onClick={() => setValue('lineItems', lineItems.filter((_, i) => i !== index))}>Remove</Button>}
-                            </div>
+                        <div className='flex gap-4' key={index}>
+                            <Input type='text'  {...register(`lineItems.${index}.description`)}
+                                   defaultValue={item.description}
+                                   id={`lineItems.${index}.description`} placeholder='Description'/>
+                            <Input type='number' defaultValue={item.quantity}
+                                   onBlur={(e) => setValue(`lineItems.${index}.quantity`, Number(e.target.value))}
+                                   id={`lineItems.${index}.quantity`} placeholder='Quantity'/>
+                            <Input type='number' defaultValue={item.price}
+                                   onBlur={(e) => {
+                                       setValue(`lineItems.${index}.price`, Number(e.target.value))
+                                   }}
+                                   id={`lineItems.${index}.price`} placeholder='Price'/>
+                            {index > 0 && <Button variant='link' type='button'
+                                                  onClick={() => setValue('lineItems', lineItems.filter((_, i) => i !== index))}>Remove</Button>}
+                        </div>
                     ))}
                     {errors.lineItems && <p className='text-red-500'>{errors.lineItems.message}</p>}
                     <Button variant='link' type='button' onClick={() => setValue('lineItems', [...lineItems, {

@@ -6,8 +6,8 @@ import {getValidatedFormData} from "remix-hook-form";
 import {getAllCategories} from "~/models/category.server";
 import {useLoaderData} from "react-router";
 import {addBill} from "~/models/bill.server";
-import {Category, Client} from "@prisma/client";
-import TransactionForm from "~/components/Bills/BillForm";
+import {Category} from "@prisma/client";
+import BillForm from "~/components/Bills/BillForm";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {BillSchema} from "~/lib/Types";
 import {getAllClientsByUser} from "~/models/client.server";
@@ -34,7 +34,7 @@ export const action = async ({request}: ActionFunctionArgs) => {
         return json({errors, receivedValues}, {status: 400});
     }
     console.log(data)
-    const {date, categoryId, payeePayer, paymentMethod, amount, notes} = data;
+    const {date, dueDate, categoryId, vendor, paymentMethod, amount, notes} = data;
     const userId = await getUserId(request);
     if (!userId) {
         return json(
@@ -46,26 +46,27 @@ export const action = async ({request}: ActionFunctionArgs) => {
             {status: 400},
         );
     }
-    const transactionDate = new Date(date);
     await addBill({
         userId,
-        date: transactionDate,
+        date: new Date(date),
+        dueDate: new Date(dueDate),
         categoryId,
-        payeePayer,
+        vendorId: vendor,
         paymentMethod,
         amount,
-        notes: notes || null
+        notes: notes || null,
     });
     return redirect('/bills');
 }
 
 
 export default function AddBill() {
-    const {categories, clients} = useLoaderData() as { categories: Category[], clients: Client[] };
+    const {categories} = useLoaderData() as { categories: Category[], };
     const defaultValues = {
         date: new Date().toISOString(),
+        dueDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
         categoryId: '',
-        payeePayer: '',
+        vendor: '',
         paymentMethod: '',
         amount: 0,
         notes: ''
@@ -75,7 +76,7 @@ export default function AddBill() {
             <Header title='Add New Bill'
                     description='Fill out the form below to record a new bill.'>
             </Header>
-            <TransactionForm categories={categories} defaultValues={defaultValues} clients={clients}/>
+            <BillForm categories={categories} defaultValues={defaultValues} vendors={[]}/>
         </>
     )
 }

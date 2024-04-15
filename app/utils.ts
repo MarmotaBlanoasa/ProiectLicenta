@@ -83,7 +83,7 @@ export function validateEmail(email: unknown): email is string {
   return typeof email === "string" && email.length > 3 && email.includes("@");
 }
 
-export const protectedRouteIds = ["/dashboard", '/transactions', '/clients', '/invoices', '/profile', '/logout'];
+export const protectedRouteIds = ["/dashboard", '/bills', '/clients', '/invoices', '/profile', '/logout'];
 export function isProtectedRoute(route: string) {
     return protectedRouteIds.includes(route);
 }

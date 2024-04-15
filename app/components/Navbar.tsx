@@ -8,7 +8,7 @@ export default function Navbar(){
         submit(data, {method: 'post', action: '/logout'})
     }
     return (
-        <nav className='bg-primary text-white h-screen fixed z-40 p-6 w-72 overflow-hidden'>
+        <nav className='bg-primary text-white h-screen fixed z-40 p-6 w-[15%] overflow-hidden'>
             <h1 className='text-2xl font-bold pb-6'>Logo Name</h1>
             <div className='flex flex-col gap-4'>
                 <NavLink to='/dashboard' name='Dashboard' icon='dashboard'/>

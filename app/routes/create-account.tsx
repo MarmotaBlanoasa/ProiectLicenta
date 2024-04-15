@@ -82,7 +82,7 @@ export default function CreateAccount() {
     return (
         <div className='flex flex-grow-1'>
             {/*<div className='w-screen bg-primary h-screen'/>*/}
-            <div className='flex flex-col justify-center items-center px-12 h-screen w-screen'>
+            <div className='flex flex-col justify-center items-center px-12 my-12 h-screen w-screen'>
                 <Form
                     method="post"
                     action='/create-account'

@@ -9,6 +9,7 @@ import {Button} from "~/components/ui/ui/button";
 import {useEffect, useState} from "react";
 import {Client} from "@prisma/client";
 import SelectClient from "~/components/Clients/SelectClient";
+import {MinusIcon} from "lucide-react";
 
 type InvoiceFormProps = {
     defaultValues: DefaultValuesInvoice
@@ -44,32 +45,32 @@ export default function InvoiceForm({defaultValues, clients}: InvoiceFormProps) 
     const isEdit = location.pathname.includes('edit')
     const isSubmitting = navigation.state !== 'idle';
     return (
-        <Form className='flex flex-col gap-4 pt-4 w-1/3' onSubmit={handleSubmit}>
+        <Form className='flex flex-col gap-4 pt-4' onSubmit={handleSubmit}>
             <h2 className='text-lg font-semibold'>Invoice Details</h2>
-            <div>
+            <div className='w-1/3'>
                 <p className='font-medium'>Invoice Number</p>
                 <Input type='text' {...register('invoiceNumber')} name='invoiceNumber' id='invoiceNumber'/>
                 {errors.invoiceNumber && <p className='text-red-500'>{errors.invoiceNumber.message}</p>}
             </div>
-            <div>
+            <div className='w-1/3'>
                 <p className='font-medium'>Vendor</p>
                 <SelectClient onValueChange={setValue} clients={clients} defaultValue={defaultValues.payeePayer}/>
             </div>
-            <div>
+            <div className='w-1/3'>
                 <p className='font-medium'>Date Issued</p>
                 <DatePicker setValue={setValue} valToSet='dateIssued'/>
             </div>
-            <div>
+            <div className='w-1/3'>
                 <p className='font-medium'>Due Date</p>
                 <DatePicker setValue={setValue} valToSet='dueDate'/>
             </div>
-            <div>
+            <div className='w-1/3'>
                 <p className='font-medium'>Paid Amount</p>
                 <Input type='number' name='paidAmount' onBlur={(e) => setValue('paidAmount', Number(e.target.value))}
                        id='paidAmount' placeholder='Paid Amount' defaultValue={defaultValues.paidAmount}/>
                 {errors.paidAmount && <p className='text-red-500'>{errors.paidAmount.message}</p>}
             </div>
-            <div>
+            <div className='w-1/3'>
                 <p className='font-medium'>Status</p>
                 <SelectComp onValueChange={setValue} valToChange='status' placeholder='Select Invoice Status'
                             options={invoiceOptions} defaultValue={defaultValues.status}/>
@@ -78,29 +79,31 @@ export default function InvoiceForm({defaultValues, clients}: InvoiceFormProps) 
             <h2 className='text-lg font-semibold'>Items/Services</h2>
             <div>
                 <p className='font-medium'>Line Items</p>
-                {lineItems.map((item, index) => (
-                    <div key={index} className='flex gap-4'>
-                        <Input type='text'  {...register(`lineItems.${index}.description`)}
-                               defaultValue={item.description}
-                               id={`lineItems.${index}.description`} placeholder='Description'/>
-                        <Input type='number' defaultValue={item.quantity}
-                               onBlur={(e) => setValue(`lineItems.${index}.quantity`, Number(e.target.value))}
-                               id={`lineItems.${index}.quantity`} placeholder='Quantity'/>
-                        <Input type='number' defaultValue={item.price}
-                               onBlur={(e) => {
-                                   setValue(`lineItems.${index}.price`, Number(e.target.value))
-                               }}
-                               id={`lineItems.${index}.price`} placeholder='Price'/>
-                        {index > 0 && <Button variant='ghost' type='button'
-                                              onClick={() => setValue('lineItems', lineItems.filter((_, i) => i !== index))}>Remove</Button>}
-                    </div>
-                ))}
-                {errors.lineItems && <p className='text-red-500'>{errors.lineItems.message}</p>}
-                <Button variant='link' type='button' onClick={() => setValue('lineItems', [...lineItems, {
-                    description: '',
-                    quantity: 0,
-                    price: 0
-                }])}>Add Line Item</Button>
+                <div className='flex flex-col gap-4 items-start pt-2'>
+                    {lineItems.map((item, index) => (
+                            <div className='flex gap-4' key={index}>
+                                <Input type='text'  {...register(`lineItems.${index}.description`)}
+                                       defaultValue={item.description}
+                                       id={`lineItems.${index}.description`} placeholder='Description'/>
+                                <Input type='number' defaultValue={item.quantity}
+                                       onBlur={(e) => setValue(`lineItems.${index}.quantity`, Number(e.target.value))}
+                                       id={`lineItems.${index}.quantity`} placeholder='Quantity'/>
+                                <Input type='number' defaultValue={item.price}
+                                       onBlur={(e) => {
+                                           setValue(`lineItems.${index}.price`, Number(e.target.value))
+                                       }}
+                                       id={`lineItems.${index}.price`} placeholder='Price'/>
+                                {index > 0 && <Button variant='link' type='button'
+                                                      onClick={() => setValue('lineItems', lineItems.filter((_, i) => i !== index))}>Remove</Button>}
+                            </div>
+                    ))}
+                    {errors.lineItems && <p className='text-red-500'>{errors.lineItems.message}</p>}
+                    <Button variant='link' type='button' onClick={() => setValue('lineItems', [...lineItems, {
+                        description: '',
+                        quantity: 0,
+                        price: 0
+                    }])}>+ Add Line Item</Button>
+                </div>
             </div>
             <h2 className='text-lg font-semibold'>Summary</h2>
             <div className='flex gap-4'>
@@ -125,13 +128,13 @@ export default function InvoiceForm({defaultValues, clients}: InvoiceFormProps) 
                     <p className='font-medium'>Total</p>
                     <Input type='number'
                            id='totalAmount' placeholder='Total Amount'
-                           value={totalValue}
+                           value={totalValue < 0 ? 0 : totalValue}
                            readOnly/>
                 </div>
             </div>
             <div className='flex gap-4'>
-                <Button type='submit' disabled={isSubmitting}>{isEdit? 'Edit' : 'Add'} Invoice</Button>
-                <Button type='button' variant='outline' onClick={()=> navigate(-1)}>Go back</Button>
+                <Button type='submit' disabled={isSubmitting}>{isEdit ? 'Edit' : 'Add'} Invoice</Button>
+                <Button type='button' variant='outline' onClick={() => navigate(-1)}>Go back</Button>
             </div>
         </Form>
     )

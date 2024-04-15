@@ -5,14 +5,14 @@ import {getUserId} from "~/session.server";
 import {getValidatedFormData} from "remix-hook-form";
 import {getAllCategories} from "~/models/category.server";
 import {useLoaderData} from "react-router";
-import {addTransaction} from "~/models/transaction.server";
+import {addBill} from "~/models/bill.server";
 import {Category, Client} from "@prisma/client";
-import TransactionForm from "~/components/Transactions/TransactionForm";
+import TransactionForm from "~/components/Bills/BillForm";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {TransactionSchema} from "~/lib/Types";
+import {BillSchema} from "~/lib/Types";
 import {getAllClientsByUser} from "~/models/client.server";
 
-const resolver = zodResolver(TransactionSchema);
+const resolver = zodResolver(BillSchema);
 
 export const loader: LoaderFunction = async ({request}) => {
     const categories = await getAllCategories();
@@ -28,13 +28,13 @@ export const action = async ({request}: ActionFunctionArgs) => {
         receivedValues,
         errors,
         data
-    } = await getValidatedFormData<zod.infer<typeof TransactionSchema>>(request, resolver);
+    } = await getValidatedFormData<zod.infer<typeof BillSchema>>(request, resolver);
     console.log(receivedValues)
     if (errors) {
         return json({errors, receivedValues}, {status: 400});
     }
     console.log(data)
-    const {date, type, categoryId, payeePayer, paymentMethod, amount, notes} = data;
+    const {date, categoryId, payeePayer, paymentMethod, amount, notes} = data;
     const userId = await getUserId(request);
     if (!userId) {
         return json(
@@ -47,25 +47,23 @@ export const action = async ({request}: ActionFunctionArgs) => {
         );
     }
     const transactionDate = new Date(date);
-    await addTransaction({
+    await addBill({
         userId,
         date: transactionDate,
-        type,
         categoryId,
         payeePayer,
         paymentMethod,
         amount,
         notes: notes || null
     });
-    return redirect('/transactions');
+    return redirect('/bills');
 }
 
 
-export default function AddTransaction() {
+export default function AddBill() {
     const {categories, clients} = useLoaderData() as { categories: Category[], clients: Client[] };
     const defaultValues = {
         date: new Date().toISOString(),
-        type: undefined,
         categoryId: '',
         payeePayer: '',
         paymentMethod: '',
@@ -74,8 +72,8 @@ export default function AddTransaction() {
     }
     return (
         <>
-            <Header title='Add New Transaction'
-                    description='Fill out the form below to record a new financial transaction.'>
+            <Header title='Add New Bill'
+                    description='Fill out the form below to record a new bill.'>
             </Header>
             <TransactionForm categories={categories} defaultValues={defaultValues} clients={clients}/>
         </>

@@ -1,16 +1,16 @@
 import {LoaderFunction, redirect} from "@remix-run/node";
 import {getUserId} from "~/session.server";
-import {deleteTransactionById} from "~/models/transaction.server";
+import {deleteBillById} from "~/models/bill.server";
 
 export const loader: LoaderFunction = async ({request, params}) => {
-    const {transactionId} = params;
-    if (!transactionId) {
-        return redirect('/transactions')
+    const {id} = params;
+    if (!id) {
+        return redirect('/bills')
     }
     const userId = await getUserId(request);
     if (!userId) {
         return redirect('/login')
     }
-    await deleteTransactionById({id: transactionId, userId});
-    return redirect('/transactions')
+    await deleteBillById({id, userId});
+    return redirect('/bills')
 }

@@ -7,35 +7,34 @@ import {Button} from "~/components/ui/ui/button";
 import {Form, useLocation, useNavigate, useNavigation} from "@remix-run/react";
 import {useRemixForm} from "remix-hook-form";
 import * as zod from "zod";
-import {TransactionSchema} from "~/lib/Types";
+import {BillSchema} from "~/lib/Types";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {Category, Client} from "@prisma/client";
-import SelectClient from "~/components/Clients/SelectClient";
+import {Category, Client, Vendor} from "@prisma/client";
+import SelectClient from "~/components/SelectClientOrVendor";
+import SelectClientOrVendor from "~/components/SelectClientOrVendor";
 
-const resolver = zodResolver(TransactionSchema);
+const resolver = zodResolver(BillSchema);
 
-type TransactionFormProps = {
+type BillFormProps = {
     categories: Category[]
-    clients: Client[]
+    vendors: Vendor[]
     defaultValues: {
         date: string
-        type: 'expense' | 'income' | undefined
         categoryId: string
-        payeePayer: string
+        vendor: string
         paymentMethod: string
         amount: number
         notes?: string
     },
 }
 
-export default function TransactionForm({categories, clients, defaultValues}: TransactionFormProps) {
+export default function BillForm({categories, vendors, defaultValues}: BillFormProps) {
     const {
         formState: {errors},
         handleSubmit,
         register,
-        setValue,
-        watch
-    } = useRemixForm<zod.infer<typeof TransactionSchema>>({
+        setValue
+    } = useRemixForm<zod.infer<typeof BillSchema>>({
         resolver,
         defaultValues: defaultValues
     });
@@ -44,7 +43,6 @@ export default function TransactionForm({categories, clients, defaultValues}: Tr
     const navigate = useNavigate()
     const loading = navigation.state !== 'idle'
     const isEdit = location.pathname.includes('edit')
-    const optionsTransactionType = [{value: 'expense', text: 'Expense'}, {value: 'income', text: 'Income'}]
     const paymentMethods = [{value: 'cash', text: 'Cash'}, {value: 'credit', text: 'Credit'}, {
         value: 'debit',
         text: 'Debit'
@@ -52,14 +50,12 @@ export default function TransactionForm({categories, clients, defaultValues}: Tr
         value: 'other',
         text: 'Other'
     }]
-    const {type} = watch()
-    const filteredCategories = type ? categories.filter(category => category.type === type) : categories
     return (
         <Form className='flex flex-col gap-4 pt-4 w-1/3'
               onSubmit={handleSubmit}
         >
             <div>
-                <p className='font-medium'>Transaction Date</p>
+                <p className='font-medium'>Bill Date</p>
                 <DatePicker setValue={setValue}/>
                 {errors.date && <p className='text-destructive'>{errors.date.message}</p>}
             </div>
@@ -72,7 +68,7 @@ export default function TransactionForm({categories, clients, defaultValues}: Tr
             </div>
             <div>
                 <p className='font-medium'>Vendor</p>
-                <SelectClient onValueChange={setValue} clients={clients} defaultValue={defaultValues.payeePayer}/>
+                <SelectClientOrVendor onValueChange={setValue} vendors={vendors} defaultValue={defaultValues.vendor} valToChange='vendor'/>
                 {errors.paymentMethod && <p className='text-destructive'>{errors.paymentMethod.message}</p>}
             </div>
             <div>
@@ -83,16 +79,9 @@ export default function TransactionForm({categories, clients, defaultValues}: Tr
                 {errors.paymentMethod && <p className='text-destructive'>{errors.paymentMethod.message}</p>}
             </div>
             <div>
-                <p className='font-medium'>Transaction type</p>
-                <SelectComp defaultValue={defaultValues.type} onValueChange={setValue} valToChange='type'
-                            options={optionsTransactionType}
-                            placeholder='Transaction Type'/>
-                {errors.type && <p className='text-destructive'>{errors.type.message}</p>}
-            </div>
-            <div>
-                <p className='font-medium'>Transaction Category</p>
+                <p className='font-medium'>Category</p>
                 <SelectCategory defaultValue={defaultValues.categoryId} onValueChange={setValue}
-                                categories={filteredCategories}/>
+                                categories={categories}/>
                 {errors.categoryId && <p className='text-destructive'>{errors.categoryId.message}</p>}
             </div>
             <div>
@@ -101,8 +90,8 @@ export default function TransactionForm({categories, clients, defaultValues}: Tr
                 {errors.notes && <p className='text-destructive'>{errors.notes.message}</p>}
             </div>
             <div className='flex gap-4'>
-                <Button disabled={loading} type='submit'>{isEdit ? 'Edit' : 'Add'} Transaction</Button>
-                <Button type='button' variant='outline' onClick={()=> navigate(-1)}>Go Back</Button>
+                <Button disabled={loading} type='submit'>{isEdit ? 'Edit' : 'Add'} Bill</Button>
+                <Button type='button' variant='outline' onClick={() => navigate(-1)}>Go Back</Button>
             </div>
         </Form>
     )

@@ -11,12 +11,12 @@ import {
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "~/components/ui/ui/table"
 import {useState} from "react";
 import {Input} from "~/components/ui/ui/input";
-import TransactionHeader from "~/components/Transactions/TransactionHeader";
+import BillHeader from "~/components/Bills/BillHeader";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[],
-    header: 'CLIENTS' | 'TRANSACTIONS' | 'INVOICES'
+    header: 'CLIENTS' | 'BILLS' | 'INVOICES'
 }
 
 export function DataTable<TData, TValue>({
@@ -43,7 +43,7 @@ export function DataTable<TData, TValue>({
     })
     return (
         <div>
-            {header === 'TRANSACTIONS' && <TransactionHeader table={table}/>}
+            {header === 'BILLS' && <BillHeader table={table}/>}
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>

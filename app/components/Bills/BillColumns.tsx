@@ -1,5 +1,5 @@
 import {ColumnDef} from "@tanstack/table-core";
-import {Transaction} from "@prisma/client";
+import {Bill} from "@prisma/client";
 import {format} from "date-fns";
 import {ArrowUpDown, MoreHorizontal} from "lucide-react";
 import {Button} from "~/components/ui/ui/button";
@@ -13,7 +13,7 @@ import {
 } from "../ui/ui/dropdown-menu";
 import {Form, Link} from "@remix-run/react";
 
-export const transactionColumns: ColumnDef<Transaction>[] = [
+export const billColumns: ColumnDef<Bill>[] = [
     {
         header: ({column}) =>{
             return(

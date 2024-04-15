@@ -8,18 +8,22 @@ generator client {
 }
 
 model User {
-  id           String        @id @default(cuid())
-  email        String        @unique
+  id           String     @id @default(cuid())
+  email        String     @unique
   password     Password?
   businessName String?
   phone        String?
   address      String?
   taxInfo      String?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
   clients      Client[]
-  transactions Transaction[]
+  bills        Bill[]
   invoices     Invoice[]
+  vendors      Vendor[]
+  merchants    Merchant[]
+  expenses     Expense[]
+  payments     Payment[]
 }
 
 model Password {
@@ -30,38 +34,49 @@ model Password {
 }
 
 model Client {
-  id           String        @id @default(cuid())
-  name         String
-  email        String?
-  phone        String?
-  address      String?
-  notes        String?
-  userId       String
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  invoices     Invoice[]
-  transactions Transaction[]
+  id       String    @id @default(cuid())
+  name     String
+  email    String?
+  phone    String?
+  address  String?
+  notes    String?
+  userId   String
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  invoices Invoice[]
+}
+
+model Vendor {
+  id      String  @id @default(cuid())
+  name    String
+  email   String?
+  phone   String?
+  address String?
+  website String?
+  userId  String
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  bills   Bill[]
 }
 
 model Category {
-  id           String        @id @default(cuid())
-  name         String
-  type         String
-  transactions Transaction[]
+  id       String    @id @default(cuid())
+  name     String
+  type     String
+  bills    Bill[]
+  expenses Expense[]
 }
 
-model Transaction {
+model Bill {
   id            String   @id @default(cuid())
   date          DateTime
-  type          String
   amount        Float
   categoryId    String
-  category      Category @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  payeePayerId  String?
-  payeePayer    Client?  @relation(fields: [payeePayerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  category      Category @relation(fields: [categoryId], references: [id])
   paymentMethod String?
   notes         String?
   userId        String
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  vendorId      String
+  vendor        Vendor   @relation(fields: [vendorId], references: [id])
 }
 
 model Invoice {
@@ -79,6 +94,7 @@ model Invoice {
   userId          String
   user            User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   lineItems       LineItem[]
+  payments        Payment[]
 }
 
 model LineItem {
@@ -88,4 +104,36 @@ model LineItem {
   price       Float
   invoiceId   String
   invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model Expense {
+  id         String   @id @default(cuid())
+  date       DateTime
+  amount     Float
+  notes      String?
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  merchantId String
+  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model Merchant {
+  id       String    @id @default(cuid())
+  name     String
+  userId   String
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  expenses Expense[]
+}
+
+model Payment {
+  id          String   @id @default(cuid())
+  amount      Float
+  paymentDate DateTime
+  method      String
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

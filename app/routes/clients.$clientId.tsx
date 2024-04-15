@@ -1,14 +1,14 @@
 import {json, LoaderFunction, redirect} from "@remix-run/node";
 import {getUserId} from "~/session.server";
 import {Link, Outlet, useLoaderData, useLocation} from "@remix-run/react";
-import {Client, Transaction} from "@prisma/client";
+import {Client, Bill} from "@prisma/client";
 import Header from "~/components/Header";
 import {getClientById} from "~/models/client.server";
 import {Button} from "~/components/ui/ui/button";
 import Svg from "~/components/Svg";
-import {getTransactionsByClientId} from "~/models/transaction.server";
+import {getBillsByClientId} from "~/models/bill.server";
 import {DataTable} from "~/components/DataTable";
-import {transactionColumns} from "~/components/Transactions/TransactionColumns";
+import {billColumns} from "~/components/Bills/BillColumns";
 
 export const loader: LoaderFunction = async ({request, params}) => {
     const userId = await getUserId(request);
@@ -20,23 +20,21 @@ export const loader: LoaderFunction = async ({request, params}) => {
         return redirect('/login')
     }
     const clientDetails = await getClientById({id: clientId, userId});
-    const clientTransactions = await getTransactionsByClientId({id: clientId, userId}) || [];
-    const formatClientTransactions = clientTransactions && clientTransactions.map(transaction => {
+    const clientTransactions = await getBillsByClientId({id: clientId, userId}) || [];
+    const formatClientTransactions = clientTransactions && clientTransactions.map(bill => {
         return {
-            ...transaction,
+            ...bill,
             payeePayer: clientDetails?.name || 'No Vendor',
-            category: transaction.category?.name || 'Uncategorized'
+            category: bill.category?.name || 'Uncategorized'
         }
     })
-    //TODO:
-    //get invoices by client ID
     return json({clientDetails, formatClientTransactions});
 }
 export default function ClientsClientId() {
     const location = useLocation();
     const {clientDetails, formatClientTransactions} = useLoaderData() as unknown as {
         clientDetails: Client,
-        formatClientTransactions: Transaction[]
+        formatClientTransactions: Bill[]
     }
     if (location.pathname.includes('edit')) {
         return <Outlet/>
@@ -77,7 +75,7 @@ export default function ClientsClientId() {
             </div>
             <div className='pt-4'>
                 <h2 className='text-lg font-medium'>Transactions</h2>
-                <DataTable columns={transactionColumns} data={formatClientTransactions} header='TRANSACTIONS'/>
+                <DataTable columns={billColumns} data={formatClientTransactions} header='TRANSACTIONS'/>
             </div>
             <div className='pt-4'>
                 <h2 className='text-lg font-medium'>Invoices</h2>

@@ -1,6 +1,6 @@
 import {Input} from "~/components/ui/ui/input";
 
-export default function TransactionHeader({table} : {table: any}){
+export default function BillHeader({table} : {table: any}){
     return (
         <div className="flex items-center py-4">
             <Input

@@ -8,7 +8,7 @@ import SelectComp from "~/components/Select";
 import {Button} from "~/components/ui/ui/button";
 import {useEffect, useState} from "react";
 import {Client} from "@prisma/client";
-import SelectClient from "~/components/Clients/SelectClient";
+import SelectClient from "~/components/SelectClientOrVendor";
 import {MinusIcon} from "lucide-react";
 
 type InvoiceFormProps = {

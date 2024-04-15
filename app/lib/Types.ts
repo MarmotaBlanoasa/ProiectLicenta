@@ -27,9 +27,8 @@ export type DefaultValuesInvoice = {
     }[];
 };
 
-export const TransactionSchema = zod.object({
+export const BillSchema = zod.object({
     date: zod.string().datetime(),
-    type: zod.enum(['expense', 'income']),
     categoryId: zod.string(),
     payeePayer: zod.string(),
     paymentMethod: zod.string(),

@@ -2,32 +2,40 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 const categoriesData = [
-    // Income Categories
-    { name: 'Salary', type: 'income' },
-    { name: 'Bonus', type: 'income' },
-    { name: 'Interest', type: 'income' },
-    { name: 'Dividends', type: 'income' },
-    { name: 'Rental Income', type: 'income' },
-    { name: 'Freelance', type: 'income' },
-
-    // Expense Categories
-    { name: 'Rent/Mortgage', type: 'expense' },
-    { name: 'Utilities - Electricity', type: 'expense' },
-    { name: 'Utilities - Water', type: 'expense' },
-    { name: 'Utilities - Gas', type: 'expense' },
-    { name: 'Groceries', type: 'expense' },
-    { name: 'Dining Out', type: 'expense' },
-    { name: 'Transportation - Fuel', type: 'expense' },
-    { name: 'Transportation - Public Transport', type: 'expense' },
-    { name: 'Entertainment', type: 'expense' },
-    { name: 'Health Insurance', type: 'expense' },
-    { name: 'Car Maintenance', type: 'expense' },
-    { name: 'Travel', type: 'expense' },
-    { name: 'Education', type: 'expense' },
-    { name: 'Gifts & Donations', type: 'expense' },
+    { name: "Advertising and Marketing", type: "expense" },
+    { name: "Bank Fees and Charges", type: "expense" },
+    { name: "Business Travel", type: "expense" },
+    { name: "Car and Truck Expenses", type: "expense" },
+    { name: "Commission and Fees", type: "expense" },
+    { name: "Contract Labor", type: "expense" },
+    { name: "Dues and Subscriptions", type: "expense" },
+    { name: "Education and Training", type: "expense" },
+    { name: "Employee Benefits", type: "expense" },
+    { name: "Equipment Rental", type: "expense" },
+    { name: "Freight and Shipping", type: "expense" },
+    { name: "Gifts", type: "expense" },
+    { name: "Insurance", type: "expense" },
+    { name: "Interest Expense", type: "expense" },
+    { name: "Legal and Professional Fees", type: "expense" },
+    { name: "Maintenance and Repairs", type: "expense" },
+    { name: "Meals and Entertainment", type: "expense" },
+    { name: "Office Supplies and Expenses", type: "expense" },
+    { name: "Payroll Expenses", type: "expense" },
+    { name: "Postage and Delivery", type: "expense" },
+    { name: "Printing and Reproduction", type: "expense" },
+    { name: "Rent", type: "expense" },
+    { name: "Taxes and Licenses", type: "expense" },
+    { name: "Telecommunications", type: "expense" },
+    { name: "Utilities", type: "expense" },
+    { name: "Website Expenses", type: "expense" },
+    { name: "Miscellaneous", type: "expense" }
 ];
+
 async function seed() {
     console.log(`Start seeding ...`);
+    // console.log('started deleting existing categories...')
+    // await prisma.category.deleteMany();
+    // console.log('finished deleting existing categories...')
     for (const c of categoriesData) {
         const category = await prisma.category.create({
             data: c,

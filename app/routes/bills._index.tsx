@@ -19,7 +19,7 @@ export const loader: LoaderFunction = async ({request}) => {
     const billsData = bills.map(bill => {
         return {
             ...bill,
-            payeePayer: bill.payeePayer?.name || 'No Vendor',
+            vendor: bill.vendor?.name || 'No Vendor',
             category: bill.category?.name || 'Uncategorized'
         }
     })

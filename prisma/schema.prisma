@@ -48,7 +48,7 @@ model Client {
 model Vendor {
   id      String  @id @default(cuid())
   name    String
-  email   String?
+  email   String
   phone   String?
   address String?
   website String?
@@ -66,18 +66,21 @@ model Category {
 }
 
 model Bill {
-  id            String   @id @default(cuid())
-  date          DateTime
-  dueDate       DateTime
-  amount        Float
-  categoryId    String
-  category      Category @relation(fields: [categoryId], references: [id])
-  paymentMethod String?
-  notes         String?
-  userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  vendorId      String
-  vendor        Vendor   @relation(fields: [vendorId], references: [id])
+  id         String     @id @default(cuid())
+  date       DateTime
+  dueDate    DateTime
+  amount     Float
+  amountPaid Float      @default(0.0)
+  status     String     @default("unpaid")
+  categoryId String
+  category   Category   @relation(fields: [categoryId], references: [id])
+  notes      String?
+  userId     String
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  vendorId   String
+  vendor     Vendor     @relation(fields: [vendorId], references: [id])
+  payments   Payment[]
+  lineItems  LineItem[]
 }
 
 model Invoice {
@@ -87,7 +90,7 @@ model Invoice {
   dueDate         DateTime
   totalAmount     Float
   paidAmount      Float      @default(0.0)
-  status          String
+  status          String     @default("unpaid")
   recurring       Boolean    @default(false)
   nextBillingDate DateTime?
   clientId        String
@@ -99,12 +102,14 @@ model Invoice {
 }
 
 model LineItem {
-  id          String  @id @default(cuid())
+  id          String   @id @default(cuid())
   description String
   quantity    Int
   price       Float
-  invoiceId   String
-  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  invoiceId   String?
+  invoice     Invoice? @relation(fields: [invoiceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  billId      String?
+  bill        Bill?    @relation(fields: [billId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Expense {
@@ -133,8 +138,10 @@ model Payment {
   amount      Float
   paymentDate DateTime
   method      String
-  invoiceId   String
-  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  invoiceId   String?
+  invoice     Invoice? @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bill        Bill?    @relation(fields: [billId], references: [id])
+  billId      String?
 }

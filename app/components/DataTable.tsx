@@ -1,5 +1,6 @@
 import {
-    ColumnDef, ColumnFiltersState,
+    ColumnDef,
+    ColumnFiltersState,
     flexRender,
     getCoreRowModel,
     getFilteredRowModel,
@@ -10,20 +11,19 @@ import {
 
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "~/components/ui/ui/table"
 import {useState} from "react";
-import {Input} from "~/components/ui/ui/input";
 import BillHeader from "~/components/Bills/BillHeader";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[],
-    header: 'CLIENTS' | 'BILLS' | 'INVOICES'
+    header: 'CLIENTS' | 'BILLS' | 'INVOICES' | 'VENDORS' | 'EXPENSES' | 'PAYMENTS'
 }
 
 export function DataTable<TData, TValue>({
-                                                         columns,
-                                                         data,
-    header
-                                                     }: DataTableProps<TData, TValue>) {
+                                             columns,
+                                             data,
+                                             header
+                                         }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
         []

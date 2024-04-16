@@ -39,11 +39,9 @@ export function addInvoice({
                                dueDate,
                                dateIssued,
                                nextBillingDate,
-                               paidAmount,
                                totalAmount,
-                               status,
                                recurring
-                           }: Pick<Invoice, 'invoiceNumber' | 'dateIssued' | 'dueDate' | 'status' | 'nextBillingDate' | 'paidAmount' | 'totalAmount' | 'recurring'> & {
+                           }: Pick<Invoice, 'invoiceNumber' | 'dateIssued' | 'dueDate' | 'nextBillingDate' | 'totalAmount' | 'recurring'> & {
     userId: User["id"],
     clientId: Client['id']
 }) {
@@ -53,9 +51,7 @@ export function addInvoice({
             dateIssued,
             dueDate,
             nextBillingDate,
-            paidAmount,
             totalAmount,
-            status,
             recurring,
             client: {
                 connect: {
@@ -79,11 +75,9 @@ export function editInvoice({
                                 dueDate,
                                 dateIssued,
                                 nextBillingDate,
-                                paidAmount,
                                 totalAmount,
-                                status,
                                 recurring,
-                            }: Pick<Invoice, 'id' | 'invoiceNumber' | 'dateIssued' | 'dueDate' | 'status' | 'nextBillingDate' | 'paidAmount' | 'totalAmount' | 'recurring'> & {
+                            }: Pick<Invoice, 'id' | 'invoiceNumber' | 'dateIssued' | 'dueDate' | 'nextBillingDate'  | 'totalAmount' | 'recurring'> & {
     userId: User["id"]
 } & { clientId: Client['id'] }) {
     return prisma.invoice.update({
@@ -93,9 +87,7 @@ export function editInvoice({
             dateIssued,
             dueDate,
             nextBillingDate,
-            paidAmount,
             totalAmount,
-            status,
             recurring,
             client: {
                 connect: {

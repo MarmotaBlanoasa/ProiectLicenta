@@ -56,7 +56,8 @@ export const action: ActionFunction = async ({request, params}) => {
     if (!userId) {
         return json({errors: {critical: 'An error occurred while updating your information. Please try again later.'}}, {status: 400})
     }
-    const {invoiceNumber, dateIssued, dueDate, payeePayer, paidAmount,totalAmount, status, recurring, lineItems} = data
+    const {invoiceNumber, dateIssued, dueDate, payeePayer, recurring, lineItems} = data
+    const totalAmount = lineItems.reduce((acc, item) => acc + item.quantity * item.price, 0)
     await Promise.all([
         await deleteLineItemByInvoiceId({invoiceId}),
         await editInvoice({
@@ -66,8 +67,6 @@ export const action: ActionFunction = async ({request, params}) => {
             dateIssued: new Date(dateIssued),
             dueDate: new Date(dueDate),
             clientId: payeePayer,
-            paidAmount,
-            status,
             recurring,
             nextBillingDate: null,
             totalAmount

@@ -16,9 +16,6 @@ export type DefaultValuesInvoice = {
     dueDate: string;
     nextBillingDate: string | null;
     payeePayer: string;
-    paidAmount: number;
-    totalAmount: number;
-    status: 'paid' | 'unpaid' | 'overdue';
     recurring: boolean;
     lineItems: {
         description: string;
@@ -27,15 +24,6 @@ export type DefaultValuesInvoice = {
     }[];
 };
 
-export const BillSchema = zod.object({
-    date: zod.string().datetime(),
-    dueDate: zod.string().datetime(),
-    categoryId: zod.string().min(1, 'Please select a category').max(100),
-    vendor: zod.string().min(1, 'Please select a vendor').max(100),
-    paymentMethod: zod.string().min(1, 'Please select a payment method').max(100),
-    amount: zod.number().min(0.01, 'Amount must be greater than 0'),
-    notes: zod.string().optional(),
-});
 export const ClientSchema = zod.object({
     name: zod.string(),
     email: zod.string().email(),
@@ -56,10 +44,36 @@ export const invoiceSchema = zod.object({
     dueDate: zod.string().datetime(),
     nextBillingDate: zod.string().datetime().optional().nullable(),
     payeePayer: zod.string(),
-    paidAmount: zod.number(),
-    totalAmount: zod.number(),
-    status: zod.enum(['paid', 'unpaid', 'overdue']),
     recurring: zod.boolean(),
     lineItems: zod.array(lineItemSchema)
 });
 export const resolverInvoice = zodResolver(invoiceSchema);
+
+export const BillSchema = zod.object({
+    date: zod.string().datetime(),
+    dueDate: zod.string().datetime(),
+    categoryId: zod.string().min(1, 'Please select a category').max(100),
+    vendor: zod.string().min(1, 'Please select a vendor').max(100),
+    notes: zod.string().optional(),
+    lineItems: zod.array(lineItemSchema)
+});
+
+export const vendorSchema= zod.object({
+    name: zod.string(),
+    email: zod.string().email(),
+    phone: zod.string().optional().nullable(),
+    address: zod.string().optional().nullable(),
+    website: zod.string().optional().nullable()
+});
+
+export const resolverVendor = zodResolver(vendorSchema);
+
+export const expenseSchema = zod.object({
+    date: zod.string().datetime(),
+    notes: zod.string().optional().nullable(),
+    amount: zod.number().min(0.01, 'Amount must be greater than 0'),
+    categoryId: zod.string().min(1, 'Please select a category').max(100),
+    merchantName: zod.string().min(1, 'Please enter a merchant name').max(100),
+})
+
+export const resolverExpense = zodResolver(expenseSchema);

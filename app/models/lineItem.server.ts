@@ -1,19 +1,16 @@
 import {prisma} from "~/db.server";
 import {LineItem} from ".prisma/client";
-import {Invoice} from "@prisma/client";
+import {Bill, Invoice, User} from "@prisma/client";
 import {editInvoice} from "~/models/invoice.server";
 
-export function addLineItem({invoiceId, description, quantity, price} : Pick<LineItem, 'quantity' | 'description' | 'price'> & {invoiceId: Invoice['id']}) {
+export function addLineItem({invoiceId, billId, description, quantity, price} : Pick<LineItem, 'quantity' | 'description' | 'price'> & {invoiceId?: Invoice['id']} & {billId?: Bill['id']}) {
     return prisma.lineItem.create({
         data: {
             description,
             quantity,
             price,
-            invoice: {
-                connect: {
-                    id: invoiceId,
-                },
-            },
+            invoiceId,
+            billId,
         },
     });
 }
@@ -36,5 +33,16 @@ export function getLineItemByInvoiceId({invoiceId}: {invoiceId: Invoice['id']}) 
 export function deleteLineItemByInvoiceId({invoiceId}: {invoiceId: Invoice['id']}) {
     return prisma.lineItem.deleteMany({
         where: {invoiceId},
+    });
+}
+export function deleteLineItemByBillId({billId}: {billId: Bill['id']}) {
+    return prisma.lineItem.deleteMany({
+        where: {billId},
+    });
+
+}
+export function getLineItemByBillId({billId}: {billId: Bill['id']}) {
+    return prisma.lineItem.findMany({
+        where: {billId},
     });
 }

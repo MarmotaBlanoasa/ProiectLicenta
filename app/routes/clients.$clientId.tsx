@@ -22,9 +22,8 @@ export const loader: LoaderFunction = async ({request, params}) => {
 }
 export default function ClientsClientId() {
     const location = useLocation();
-    const {clientDetails, formatClientTransactions} = useLoaderData() as unknown as {
+    const {clientDetails} = useLoaderData() as unknown as {
         clientDetails: Client,
-        formatClientTransactions: Bill[]
     }
     if (location.pathname.includes('edit')) {
         return <Outlet/>

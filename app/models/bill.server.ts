@@ -9,9 +9,9 @@ export function getAllBillsByUser({userId}: { userId: User["id"] }) {
             date: true,
             dueDate: true,
             amount: true,
+            status: true,
             category: {select: {name: true}},
-            paymentMethod: true,
-            vendorId: true,
+            vendor: {select: {id: true, name: true}},
             notes: true,
         },
         orderBy: {date: 'desc'},
@@ -27,10 +27,11 @@ export function getBillById({id, userId}: Pick<Bill, "id"> & { userId: User["id"
             date: true,
             dueDate: true,
             amount: true,
-            category: {select: {name: true}},
-            paymentMethod: true,
+            status: true,
+            category: {select: {id:true, name: true}},
             vendor: {select: {id: true, name: true}},
-            notes: true
+            notes: true,
+            lineItems:{select: {description: true, quantity: true, price: true}}
         },
     });
 
@@ -42,17 +43,15 @@ export function addBill({
                             dueDate,
                             categoryId,
                             vendorId,
-                            paymentMethod,
                             amount,
                             notes
-                        }: Pick<Bill, 'date' | 'dueDate' | 'paymentMethod' | 'amount' | 'notes'> & {
+                        }: Pick<Bill, 'date' | 'dueDate' | 'amount' | 'notes'> & {
     userId: User["id"]
 } & { categoryId: Category["id"] } & { vendorId: Vendor["id"] }) {
     return prisma.bill.create({
         data: {
             date,
             dueDate,
-            paymentMethod,
             amount,
             notes,
             user: {
@@ -81,10 +80,9 @@ export function editBillById({
                                  dueDate,
                                  categoryId,
                                  vendor,
-                                 paymentMethod,
                                  amount,
                                  notes
-                             }: Pick<Bill, 'id' | 'date' | 'dueDate' | 'paymentMethod' | 'amount' | 'notes'> & {
+                             }: Pick<Bill, 'id' | 'date' | 'dueDate' | 'amount' | 'notes'> & {
     userId: User["id"]
 } & { categoryId: Category["id"] } & { vendor: Vendor["id"] }) {
     return prisma.bill.update({
@@ -92,7 +90,6 @@ export function editBillById({
         data: {
             date,
             dueDate,
-            paymentMethod,
             amount,
             notes,
             user: {
@@ -132,7 +129,6 @@ export function getBillsByVendorId({id: vendorId, userId}: Pick<Vendor, "id"> & 
             dueDate: true,
             amount: true,
             category: {select: {name: true}},
-            paymentMethod: true,
             vendor: {select: {id: true, name: true}},
             notes: true
         },

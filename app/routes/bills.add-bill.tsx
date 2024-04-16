@@ -6,11 +6,13 @@ import {getValidatedFormData} from "remix-hook-form";
 import {getAllCategories} from "~/models/category.server";
 import {useLoaderData} from "react-router";
 import {addBill} from "~/models/bill.server";
-import {Category} from "@prisma/client";
+import {Category, Vendor} from "@prisma/client";
 import BillForm from "~/components/Bills/BillForm";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {BillSchema} from "~/lib/Types";
 import {getAllClientsByUser} from "~/models/client.server";
+import {addLineItem} from "~/models/lineItem.server";
+import {getVendorsByUserId} from "~/models/vendor.server";
 
 const resolver = zodResolver(BillSchema);
 
@@ -20,8 +22,8 @@ export const loader: LoaderFunction = async ({request}) => {
     if (!userId) {
         return redirect('/login');
     }
-    const clients = await getAllClientsByUser({userId});
-    return json({categories, clients});
+    const vendors = await getVendorsByUserId(userId);
+    return json({categories, vendors});
 }
 export const action = async ({request}: ActionFunctionArgs) => {
     const {
@@ -34,7 +36,8 @@ export const action = async ({request}: ActionFunctionArgs) => {
         return json({errors, receivedValues}, {status: 400});
     }
     console.log(data)
-    const {date, dueDate, categoryId, vendor, paymentMethod, amount, notes} = data;
+    const {date, dueDate, categoryId, vendor, notes, lineItems} = data;
+    const amount = lineItems.reduce((acc, item) => acc + item.quantity * item.price, 0);
     const userId = await getUserId(request);
     if (!userId) {
         return json(
@@ -46,37 +49,45 @@ export const action = async ({request}: ActionFunctionArgs) => {
             {status: 400},
         );
     }
-    await addBill({
+    const bill = await addBill({
         userId,
         date: new Date(date),
         dueDate: new Date(dueDate),
         categoryId,
         vendorId: vendor,
-        paymentMethod,
         amount,
         notes: notes || null,
     });
+    await Promise.all(
+        lineItems.map(async (item) => {
+            await addLineItem({
+                billId: bill.id,
+                description: item.description,
+                quantity: item.quantity,
+                price: item.price,
+            });
+        })
+    );
     return redirect('/bills');
 }
 
 
 export default function AddBill() {
-    const {categories} = useLoaderData() as { categories: Category[], };
+    const {categories, vendors} = useLoaderData() as { categories: Category[], vendors: Vendor[]};
     const defaultValues = {
         date: new Date().toISOString(),
         dueDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
         categoryId: '',
         vendor: '',
-        paymentMethod: '',
-        amount: 0,
-        notes: ''
+        notes: '',
+        lineItems: [{description: '', quantity: 0, price: 0}]
     }
     return (
         <>
             <Header title='Add New Bill'
                     description='Fill out the form below to record a new bill.'>
             </Header>
-            <BillForm categories={categories} defaultValues={defaultValues} vendors={[]}/>
+            <BillForm categories={categories} defaultValues={defaultValues} vendors={vendors}/>
         </>
     )
 }

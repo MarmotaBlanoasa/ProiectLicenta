@@ -1,12 +1,12 @@
 import Header from "~/components/Header";
-import {Link, Outlet, useLocation} from "@remix-run/react";
+import {Link, Outlet, useLocation, useNavigate} from "@remix-run/react";
 import {Button} from "~/components/ui/ui/button";
 import Svg from "~/components/Svg";
 import {json, LoaderFunction, redirect} from "@remix-run/node";
 import {useLoaderData} from "react-router";
 import {getBillById} from "~/models/bill.server";
 import {getUserId} from "~/session.server";
-import {Client, Bill} from "@prisma/client";
+import {Bill} from "@prisma/client";
 import {format} from "date-fns";
 
 export const loader: LoaderFunction = async ({request, params}) => {
@@ -23,28 +23,30 @@ export const loader: LoaderFunction = async ({request, params}) => {
 }
 
 export default function BillsBillId() {
+    const navigate = useNavigate();
     const {billDetails} = useLoaderData() as {
-        billDetails: Bill & { category: { name: string, type: string } } & { payeePayer: { id: string, name: string } }
+        billDetails: Bill & { category: { id: string, name: string } } & { vendor: { id: string, name: string } }
     };
-    console.log(billDetails)
     const url = useLocation();
     if (url.pathname.includes('edit')) {
-        return <Outlet/>
+        return <Outlet context={{billDetails}}/>
     }
     return (
         <>
-            <Header title={`Transactions - #${billDetails.id}`}>
+            <Header title={<p className='flex items-center gap-4'>Bill <span
+                className={`px-2 py-1 rounded-full text-xs ${billDetails.status === 'paid' ? 'bg-green-500 text-white' : billDetails.status === 'unpaid' ? 'bg-red-500 text-white' : 'bg-yellow-500 text-white'}`}>{billDetails.status.toUpperCase()}</span>
+            </p>}>
                 <div className='flex gap-4'>
-                    <Link to='/transactions/add-transaction'>
+                    <Link to='/bills/add-bill'>
                         <Button className='flex gap-2 items-center'>
                             <Svg icon='plus'/>
-                            Add New Transaction
+                            Add New Bill
                         </Button>
                     </Link>
                 </div>
             </Header>
             <div className='flex flex-col gap-4 pt-4'>
-                <h2 className='text-lg font-medium'>Transaction Information</h2>
+                <h2 className='text-lg font-medium'>Bill Information</h2>
                 <div className='flex flex-col gap-2'>
                     <p className='font-medium'>Amount</p>
                     <p>${billDetails.amount}</p>
@@ -53,29 +55,27 @@ export default function BillsBillId() {
                     <p className='font-medium'>Date</p>
                     <p>{format(billDetails.date, 'PPP')}</p>
                 </div>
+                <div>
+                    <p className='font-medium'>Due Date</p>
+                    <p>{format(billDetails.dueDate, 'PPP')}</p>
+                </div>
                 <div className='flex flex-col gap-2'>
                     <p className='font-medium'>Category</p>
                     <p>{billDetails.category.name}</p>
                 </div>
                 <div className='flex flex-col gap-2'>
-                    <p className='font-medium'>Payment Method</p>
-                    <p>{billDetails.paymentMethod}</p>
-                </div>
-                <div className='flex flex-col gap-2'>
-                    <p className='font-medium'>Payee/Payer</p>
-                    <p>{billDetails.payeePayer.name}</p>
+                    <p className='font-medium'>Vendor</p>
+                    <p>{billDetails.vendor.name}</p>
                 </div>
                 <div className='flex flex-col gap-2'>
                     <p className='font-medium'>Notes</p>
                     <p>{billDetails.notes}</p>
                 </div>
                 <div className='flex gap-4'>
-                    <Link to={`/transactions/${billDetails.id}/edit`}>
-                        <Button>Edit Transaction</Button>
+                    <Link to={`/bills/${billDetails.id}/edit`}>
+                        <Button>Edit Bill</Button>
                     </Link>
-                    <Link to='/transactions'>
-                        <Button variant='outline'>Go Back</Button>
-                    </Link>
+                    <Button variant='outline' onClick={()=>navigate(-1)}>Go Back</Button>
                 </div>
             </div>
         </>

@@ -5,7 +5,6 @@ import {expenseSchema, resolverExpense as resolver} from "~/lib/Types";
 import {Form, useLocation, useNavigate, useNavigation} from "@remix-run/react";
 import SelectCategory from "~/components/SelectCategory";
 import DatePicker from "~/components/DatePicker";
-import {Textarea} from "~/components/ui/ui/textarea";
 import {Input} from "~/components/ui/ui/input";
 import {Button} from "~/components/ui/ui/button";
 
@@ -53,7 +52,8 @@ export default function ExpenseForm({categories, defaultValues}: ExpenseFormProp
             </div>
             <div>
                 <p className='font-medium'>Amount</p>
-                <Input onBlur={(e) => setValue('amount', Number(e.target.value))} name='amount' id='amount' placeholder='Amount'/>
+                <Input onBlur={(e) => setValue('amount', Number(e.target.value))} name='amount' id='amount'
+                       placeholder='Amount'/>
                 {errors.amount && <p className='text-destructive'>{errors.amount.message}</p>}
             </div>
             <div>

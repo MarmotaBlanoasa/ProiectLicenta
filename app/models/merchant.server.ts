@@ -23,3 +23,21 @@ export function addMerchant({userId, name}: { userId: User['id'], name: Merchant
         }
     })
 }
+
+export function deleteMerchantByName({userId, name}: { userId: User['id'], name: Merchant['name'] }) {
+    return prisma.merchant.deleteMany({
+        where: {
+            userId,
+            name
+        }
+    })
+}
+
+export function getMerchantsByName({userId, name}: { userId: User['id'], name: Merchant['name'] }) {
+    return prisma.merchant.findFirst({
+        where: {
+            userId,
+            name
+        }
+    })
+}

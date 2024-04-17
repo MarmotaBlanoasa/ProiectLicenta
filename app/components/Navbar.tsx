@@ -17,6 +17,7 @@ export default function Navbar(){
                 <NavLink to='/bills' name='Bills' icon='transactions'/>
                 <NavLink to='/expenses' name='Expenses' icon='transactions'/>
                 <NavLink to='/invoices' name='Invoices' icon='invoices'/>
+                <NavLink to='/payments' name='Payments' icon='invoices'/>
                 <NavLink to='/profile' name='Profile' icon='profile'/>
             </div>
             <div className='absolute bottom-8' onClick={handleLogout}>

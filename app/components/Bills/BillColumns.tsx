@@ -12,6 +12,15 @@ import {
     DropdownMenuTrigger
 } from "../ui/ui/dropdown-menu";
 import {Link} from "@remix-run/react";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger
+} from "~/components/ui/ui/dialog";
+import PaymentForm from "~/components/Payments/PaymentForm";
 
 export const billColumns: ColumnDef<Bill>[] = [
     {
@@ -80,30 +89,53 @@ export const billColumns: ColumnDef<Bill>[] = [
         id: "actions",
         cell: ({row}) => {
             const bill = row.original
+            const now = new Date().toISOString()
             return (
                 <div className='flex items-center justify-center'>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4"/>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuSeparator/>
-                            <DropdownMenuItem><Link to={`/bills/${bill.id}`}>View
-                                Bill</Link></DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Link to={`/bills/${bill.id}/edit`}>Edit Bill</Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Link to={`/bills/${bill.id}/delete`}>
-                                    Delete Bill
-                                </Link>
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <Dialog>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                    <span className="sr-only">Open menu</span>
+                                    <MoreHorizontal className="h-4 w-4"/>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuSeparator/>
+                                <DropdownMenuItem><Link to={`/bills/${bill.id}`}>View
+                                    Bill</Link></DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    <Link to={`/bills/${bill.id}/edit`}>Edit Bill</Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    <Link to={`/bills/${bill.id}/delete`}>
+                                        Delete Bill
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    <DialogTrigger asChild>
+                                        <Button variant='ghost'>Add a payment</Button>
+                                    </DialogTrigger>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        <DialogContent className='sm:max-w-md'>
+                            <DialogHeader>
+                                <DialogTitle>
+                                    Add a new payment
+                                </DialogTitle>
+                                <DialogDescription>
+                                    Fill out the form below to add a new payment for this bill.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div>
+                                <PaymentForm
+                                    defaultValues={{paymentDate: now, amount: 0, method: '', billId: bill.id}}/>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+
                 </div>
             )
 

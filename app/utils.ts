@@ -83,7 +83,24 @@ export function validateEmail(email: unknown): email is string {
   return typeof email === "string" && email.length > 3 && email.includes("@");
 }
 
-export const protectedRouteIds = ["/dashboard", '/bills', '/clients','/vendors', '/expenses' ,'/invoices', '/profile', '/logout'];
+export const protectedRouteIds = ["/dashboard", '/bills', '/clients','/vendors', '/expenses' ,'/invoices', '/profile', '/logout', '/payments'];
 export function isProtectedRoute(route: string) {
     return protectedRouteIds.includes(route);
 }
+type PaymentMethod = { value: string; text: string; };
+type PaymentMethodsMap = { [key: string]: string };
+export const paymentMethods  = [
+  { value: 'cash', text: 'Cash' },
+  { value: 'bank_transfer', text: 'Bank Transfer' },
+  { value: 'credit_card', text: 'Credit Card' },
+  { value: 'debit_card', text: 'Debit Card' },
+  { value: 'online_payment', text: 'Online Payment' },
+  { value: 'mobile_payment', text: 'Mobile Payment' },
+  { value: 'cheque', text: 'Cheque' },
+  { value: 'direct_debit', text: 'Direct Debit' },
+  { value: 'crypto', text: 'Cryptocurrency' },
+] as PaymentMethod[];
+export const paymentMethodsMap = paymentMethods.reduce<PaymentMethodsMap>((acc, curr) => {
+  acc[curr.value] = curr.text;
+  return acc;
+}, {});

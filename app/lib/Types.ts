@@ -77,3 +77,13 @@ export const expenseSchema = zod.object({
 })
 
 export const resolverExpense = zodResolver(expenseSchema);
+
+export const paymentSchema = zod.object({
+    paymentDate: zod.string().datetime(),
+    amount: zod.number().min(0.01, 'Amount must be greater than 0'),
+    method: zod.string().min(1, 'Please select a payment method'),
+    billId: zod.string().optional().nullable(),
+    invoiceId: zod.string().optional().nullable(),
+})
+
+export const resolverPayment = zodResolver(paymentSchema);

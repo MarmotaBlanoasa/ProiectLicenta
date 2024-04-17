@@ -3,12 +3,12 @@ import {Button} from "~/components/ui/ui/button";
 import Svg from "~/components/Svg";
 import Header from "~/components/Header";
 import {json, LoaderFunction, redirect} from "@remix-run/node";
-import { getUserId } from "~/session.server";
+import {getUserId} from "~/session.server";
 import {getExpenseById} from "~/models/expense.server";
-import {Category, Expense, Merchant} from "@prisma/client";
+import {Expense} from "@prisma/client";
 import {format} from "date-fns";
 
-export const loader:LoaderFunction = async ({request, params}) => {
+export const loader: LoaderFunction = async ({request, params}) => {
     const userId = await getUserId(request)
     if (!userId) {
         return redirect('/login')
@@ -27,7 +27,7 @@ export const loader:LoaderFunction = async ({request, params}) => {
 
 }
 
-export default function ExpensesExpenseId(){
+export default function ExpensesExpenseId() {
     const {expenseDetails} = useLoaderData() as unknown as {
         expenseDetails: Expense & { category: string } & { merchant: string }
     }
@@ -36,7 +36,7 @@ export default function ExpensesExpenseId(){
     if (location.pathname.includes('edit')) {
         return <Outlet context={{expenseDetails}}/>
     }
-    return(
+    return (
         <>
             <Header title={`Expense ${expenseDetails.id}`}>
                 <div className='flex gap-4'>

@@ -1,5 +1,5 @@
 import {prisma} from "~/db.server";
-import {Invoice, Payment, User} from "@prisma/client";
+import {Bill, Invoice, Payment, User} from "@prisma/client";
 
 export function getPaymentsByUserId({ userId }: {
     userId: User["id"];
@@ -11,9 +11,31 @@ export function getPaymentsByUserId({ userId }: {
     });
 }
 
-export function addPayment({userId, invoiceId, amount, paymentDate, method}: {
+export function addBillPayment({userId, billId, amount, paymentDate, method}: {
     userId: User["id"],
-    invoiceId: Invoice['id'],
+    billId?: Bill['id'],
+} & Pick<Payment, "amount" | "paymentDate" | "method">) {
+    return prisma.payment.create({
+        data: {
+            amount,
+            paymentDate,
+            method,
+            user: {
+                connect: {
+                    id: userId
+                }
+            },
+            bill:{
+                connect:{
+                    id: billId
+                }
+            }
+        }
+    });
+}
+export function addInvoicePayment({userId, invoiceId, amount, paymentDate, method}: {
+    userId: User["id"],
+    invoiceId?: Invoice['id'],
 } & Pick<Payment, "amount" | "paymentDate" | "method">) {
     return prisma.payment.create({
         data: {
@@ -33,7 +55,6 @@ export function addPayment({userId, invoiceId, amount, paymentDate, method}: {
         }
     });
 }
-
 export function getPaymentById({id, userId}: Pick<Payment, "id"> & { userId: User["id"] }) {
     return prisma.payment.findUnique({
         where: {

@@ -9,6 +9,7 @@ import {
 } from "~/components/ui/ui/dropdown-menu";
 import {MoreHorizontal} from "lucide-react";
 import {Link} from "@remix-run/react";
+import {format} from "date-fns";
 
 export const expensesColumns: ColumnDef<Expense>[] = [
     {
@@ -22,14 +23,15 @@ export const expensesColumns: ColumnDef<Expense>[] = [
     {
         header: 'Date',
         accessorKey: 'date',
+        cell: ({row}) => <div>{format(row.original.date, 'PPP')}</div>
     },
     {
         header: 'Category',
-        accessorKey: 'category',
+        accessorKey: 'categoryId',
     },
     {
         header: 'Merchant',
-        accessorKey: 'merchant',
+        accessorKey: 'merchantId',
     },
     {
         id:'actions',

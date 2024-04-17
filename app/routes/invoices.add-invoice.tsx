@@ -29,7 +29,6 @@ export const action: ActionFunction = async ({request}) => {
         invoiceNumber,
         dateIssued,
         dueDate,
-        status,
         recurring,
         payeePayer,
         lineItems
@@ -40,7 +39,6 @@ export const action: ActionFunction = async ({request}) => {
         clientId: payeePayer,
         invoiceNumber,
         recurring,
-        status,
         totalAmount,
         nextBillingDate: null,
         dateIssued: new Date(dateIssued),

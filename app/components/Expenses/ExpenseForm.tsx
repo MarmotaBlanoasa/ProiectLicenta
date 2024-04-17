@@ -14,7 +14,7 @@ type ExpenseFormProps = {
     defaultValues: {
         date: string,
         categoryId: string
-        merchant: string
+        merchantName: string
         notes: string | null,
     },
 }
@@ -38,12 +38,12 @@ export default function ExpenseForm({categories, defaultValues}: ExpenseFormProp
         <Form className='flex flex-col gap-4 pt-4 w-1/3' onSubmit={handleSubmit}>
             <div>
                 <p className='font-medium'>Description</p>
-                <Input {...register('notes')} name='notes' id='notes' placeholder='Notes'/>
+                <Input {...register('notes')} name='notes' id='notes' placeholder='Description'/>
                 {errors.notes && <p className='text-destructive'>{errors.notes.message}</p>}
             </div>
             <div>
                 <p className='font-medium'>Merchant</p>
-                <Input {...register('merchantName')} name='merchant' id='merchant' placeholder='Merchant'/>
+                <Input {...register('merchantName')} name='merchantName' id='merchant' placeholder='Merchant'/>
                 {errors.merchantName && <p className='text-destructive'>{errors.merchantName.message}</p>}
             </div>
             <div>

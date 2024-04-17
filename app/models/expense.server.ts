@@ -6,6 +6,10 @@ export function getExpensesByUserId({ userId }: {userId: User["id"]}) {
         where: {
         userId,
         },
+        include: {
+            category: {select: {name: true}},
+            merchant: {select: {name: true}}
+        }
     });
 }
 
@@ -43,6 +47,10 @@ export function getExpenseById({id, userId}: Pick<Expense, "id"> & { userId: Use
         where: {
             id,
             userId
+        },
+        include:{
+            category: true,
+            merchant: true
         }
     });
 }

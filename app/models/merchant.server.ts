@@ -21,5 +21,5 @@ export function addMerchant({userId, name}: { userId: User['id'], name: Merchant
                 }
             }
         }
-    });
+    })
 }

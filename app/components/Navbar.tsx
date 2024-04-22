@@ -9,15 +9,15 @@ export default function Navbar(){
     }
     return (
         <nav className='bg-primary text-white h-screen fixed z-40 p-6 w-[15%] overflow-hidden'>
-            <h1 className='text-2xl font-bold pb-6'>Logo Name</h1>
+            <h1 className='text-2xl font-bold pb-6'>FinanceForge</h1>
             <div className='flex flex-col gap-4'>
                 <NavLink to='/dashboard' name='Dashboard' icon='dashboard'/>
                 <NavLink to='/clients' name='Clients' icon='clients'/>
-                <NavLink to='/vendors' name='Vendors' icon='clients'/>
-                <NavLink to='/bills' name='Bills' icon='transactions'/>
-                <NavLink to='/expenses' name='Expenses' icon='transactions'/>
+                <NavLink to='/vendors' name='Vendors' icon='vendors'/>
+                <NavLink to='/bills' name='Bills' icon='bills'/>
+                <NavLink to='/expenses' name='Expenses' icon='expenses'/>
                 <NavLink to='/invoices' name='Invoices' icon='invoices'/>
-                <NavLink to='/payments' name='Payments' icon='invoices'/>
+                <NavLink to='/payments' name='Payments' icon='payments'/>
                 <NavLink to='/profile' name='Profile' icon='profile'/>
             </div>
             <div className='absolute bottom-8' onClick={handleLogout}>

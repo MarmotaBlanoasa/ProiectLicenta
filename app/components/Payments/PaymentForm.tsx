@@ -7,7 +7,6 @@ import SelectComp from "~/components/Select";
 import {paymentMethods} from "~/utils";
 import {Button} from "~/components/ui/ui/button";
 import {Input} from "~/components/ui/ui/input";
-import {register} from "tsconfig-paths";
 
 type PaymentFormProps = {
     defaultValues: {
@@ -39,7 +38,7 @@ export default function PaymentForm({defaultValues}: PaymentFormProps) {
     const loading = navigation.state !== 'idle'
     const isEdit = location.pathname.includes('edit')
     return (
-        <Form className='flex flex-col gap-4 pt-4' onSubmit={handleSubmit} reloadDocument>
+        <Form className='flex flex-col gap-4 pt-4' onSubmit={handleSubmit}>
             <Input {...register('billId')} type='hidden' id='billId'/>
             <Input {...register('invoiceId')} type='hidden' id='invoiceId'/>
             <div>

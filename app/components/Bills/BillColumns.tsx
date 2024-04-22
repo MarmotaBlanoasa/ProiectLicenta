@@ -101,8 +101,6 @@ export const billColumns: ColumnDef<Bill>[] = [
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuSeparator/>
                                 <DropdownMenuItem><Link to={`/bills/${bill.id}`}>View
                                     Bill</Link></DropdownMenuItem>
                                 <DropdownMenuItem>
@@ -115,7 +113,7 @@ export const billColumns: ColumnDef<Bill>[] = [
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
                                     <DialogTrigger asChild>
-                                        <Button variant='ghost'>Add a payment</Button>
+                                        <Button variant='ghost' size='link'>Add a payment</Button>
                                     </DialogTrigger>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>

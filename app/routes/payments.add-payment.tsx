@@ -2,8 +2,9 @@ import {ActionFunction, json, redirect} from "@remix-run/node";
 import {getUserId} from "~/session.server";
 import {getValidatedFormData} from "remix-hook-form";
 import * as zod from "zod";
-import {resolverPayment as resolver, paymentSchema} from "~/lib/Types";
+import {paymentSchema, resolverPayment as resolver} from "~/lib/Types";
 import {addBillPayment} from "~/models/payment.server";
+import {getBillAmountAmountPaidById, updateBillAmountPaidById, updateBillStatusById} from "~/models/bill.server";
 
 export const action: ActionFunction = async ({request}) => {
     const userId = await getUserId(request);
@@ -31,6 +32,11 @@ export const action: ActionFunction = async ({request}) => {
         billId,
         method
     });
+    const billPaidAmount = await getBillAmountAmountPaidById({id: billId, userId});
+    await updateBillAmountPaidById({id: billId, userId, amountPaid: Number(billPaidAmount?.amountPaid) + amount});
+    if (Number(billPaidAmount?.amountPaid) + amount >= Number(billPaidAmount?.amount)) {
+        await updateBillStatusById({id: billId, userId, status: 'paid'})
+    }
     return null
 }
 

@@ -24,7 +24,7 @@ export default function VendorsIndex(){
     const {vendors} = useLoaderData() as {vendors: Vendor[]};
     return (
         <>
-            <Header title='Vendors'>
+            <Header title='Vendors' description='Handle vendor details, view, add, and edit contact information, and track purchase history'>
                 <div className='flex gap-4'>
                     <Link to='/vendors/add-vendor'>
                         <Button className='flex gap-2 items-center'>

@@ -21,7 +21,7 @@ export default function PaymentsIndex(){
     console.log(payments)
     return (
         <>
-            <Header title='Payments'/>
+            <Header title='Payments' description='Track all payment activities, including both receivables and payables'/>
             <div className='pt-4'>
                 <DataTable columns={paymentsColumns} data={payments} header='PAYMENTS' />
             </div>

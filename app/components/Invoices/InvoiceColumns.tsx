@@ -5,13 +5,20 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "~/components/ui/ui/dropdown-menu";
 import {Button} from "~/components/ui/ui/button";
 import {MoreHorizontal} from "lucide-react";
 import {Link} from "@remix-run/react";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger
+} from "~/components/ui/ui/dialog";
+import PaymentForm from "~/components/Payments/PaymentForm";
 
 export const invoiceColumns: ColumnDef<Invoice>[] =
     [
@@ -72,28 +79,48 @@ export const invoiceColumns: ColumnDef<Invoice>[] =
             id: 'actions',
             cell: ({row}) => {
                 const invoice = row.original
+                const now = new Date().toISOString().split('T')[0]
                 return (
                     <div className='flex items-center justify-center'>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                    <span className="sr-only">Open menu</span>
-                                    <MoreHorizontal className="h-4 w-4"/>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuSeparator/>
-                                <DropdownMenuItem><Link to={`/invoices/${invoice.id}`}>View
-                                    Invoice</Link></DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    <Link to={`/invoices/${invoice.id}/edit`}>Edit Invoice</Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    <Link to={`/invoices/${invoice.id}/delete`}>Delete Invoice</Link>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <Dialog>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                        <span className="sr-only">Open menu</span>
+                                        <MoreHorizontal className="h-4 w-4"/>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem><Link to={`/invoices/${invoice.id}`}>View
+                                        Invoice</Link></DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Link to={`/invoices/${invoice.id}/edit`}>Edit Invoice</Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Link to={`/invoices/${invoice.id}/delete`}>Delete Invoice</Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <DialogTrigger asChild>
+                                            <Button variant='ghost' size='link'>Add a payment</Button>
+                                        </DialogTrigger>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                            <DialogContent className='sm:max-w-md'>
+                                <DialogHeader>
+                                    <DialogTitle>
+                                        Add a new payment
+                                    </DialogTitle>
+                                    <DialogDescription>
+                                        Fill out the form below to add a new payment for this invoice.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div>
+                                    <PaymentForm
+                                        defaultValues={{paymentDate: now, amount: 0, method: '', invoiceId: invoice.id}}/>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
                     </div>
                 )
             }

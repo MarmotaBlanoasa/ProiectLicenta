@@ -39,8 +39,6 @@ export const clientColumns: ColumnDef<Client>[] = [
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuSeparator/>
                             <DropdownMenuItem><Link to={`/clients/${client.id}`}>View Client</Link></DropdownMenuItem>
                             <DropdownMenuItem>
                                 <Link to={`/clients/${client.id}/edit`}>Edit Client</Link>

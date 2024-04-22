@@ -135,3 +135,21 @@ export function getBillsByVendorId({id: vendorId, userId}: Pick<Vendor, "id"> & 
         orderBy: {date: 'desc'},
     });
 }
+export function updateBillStatusById({id, userId, status}: Pick<Bill, "id" | "status"> & { userId: User["id"] }) {
+    return prisma.bill.update({
+        where: {id, userId},
+        data: {status}
+    });
+}
+export function updateBillAmountPaidById({id, userId, amountPaid}: Pick<Bill, "id" | "amountPaid"> & { userId: User["id"] }) {
+    return prisma.bill.update({
+        where: {id, userId},
+        data: {amountPaid}
+    });
+}
+export function getBillAmountAmountPaidById({id, userId}: Pick<Bill, "id"> & { userId: User["id"] }) {
+    return prisma.bill.findFirst({
+        where: {id, userId},
+        select: {amountPaid: true, amount: true}
+    });
+}

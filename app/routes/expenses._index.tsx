@@ -30,7 +30,7 @@ export default function ExpensesIndex(){
     const {expensesData} = useLoaderData() as unknown as {expensesData: Expense[]};
     return (
         <>
-            <Header title='Expenses'>
+            <Header title='Expenses' description='Record and review business expenses, categorize them, and analyze spending patterns'>
                 <div className='flex gap-4'>
                     <Link to='/expenses/add-expense'>
                         <Button className='flex gap-2 items-center'>

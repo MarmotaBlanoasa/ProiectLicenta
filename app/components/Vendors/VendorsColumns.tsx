@@ -56,7 +56,6 @@ export const vendorsColumns: ColumnDef<Vendor>[] = [
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem>
                                 <Link to={`/vendors/${row.original.id}`}>View Vendor</Link>
                             </DropdownMenuItem>

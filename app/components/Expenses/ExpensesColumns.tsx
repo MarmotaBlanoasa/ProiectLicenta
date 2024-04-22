@@ -47,8 +47,6 @@ cell: ({row}) => {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuSeparator/>
                             <DropdownMenuItem><Link to={`/expenses/${expense.id}`}>View Expense</Link></DropdownMenuItem>
                             <DropdownMenuItem>
                                 <Link to={`/expenses/${expense.id}/edit`}>Edit Expense</Link>

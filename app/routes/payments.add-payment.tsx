@@ -3,8 +3,13 @@ import {getUserId} from "~/session.server";
 import {getValidatedFormData} from "remix-hook-form";
 import * as zod from "zod";
 import {paymentSchema, resolverPayment as resolver} from "~/lib/Types";
-import {addBillPayment} from "~/models/payment.server";
+import {addBillPayment, addInvoicePayment} from "~/models/payment.server";
 import {getBillAmountAmountPaidById, updateBillAmountPaidById, updateBillStatusById} from "~/models/bill.server";
+import {
+    getInvoiceAmountAmountPaidById,
+    updateInvoiceAmountPaidById,
+    updateInvoiceStatusById
+} from "~/models/invoice.server";
 
 export const action: ActionFunction = async ({request}) => {
     const userId = await getUserId(request);
@@ -22,20 +27,36 @@ export const action: ActionFunction = async ({request}) => {
     }
     console.log(data)
     const {paymentDate, amount, billId, invoiceId, method} = data;
-    if (!billId) {
-        return json({error: 'Bill or Invoice ID is required'}, {status: 400})
+    if (billId) {
+        await addBillPayment({
+            userId,
+            paymentDate: new Date(paymentDate),
+            amount,
+            billId,
+            method
+        });
+        const billPaidAmount = await getBillAmountAmountPaidById({id: billId, userId});
+        await updateBillAmountPaidById({id: billId, userId, amountPaid: Number(billPaidAmount?.amountPaid) + amount});
+        if (Number(billPaidAmount?.amountPaid) + amount >= Number(billPaidAmount?.amount)) {
+            await updateBillStatusById({id: billId, userId, status: 'paid'})
+        } else {
+            await updateBillStatusById({id: billId, userId, status: 'partial'})
+        }
     }
-    await addBillPayment({
-        userId,
-        paymentDate: new Date(paymentDate),
-        amount,
-        billId,
-        method
-    });
-    const billPaidAmount = await getBillAmountAmountPaidById({id: billId, userId});
-    await updateBillAmountPaidById({id: billId, userId, amountPaid: Number(billPaidAmount?.amountPaid) + amount});
-    if (Number(billPaidAmount?.amountPaid) + amount >= Number(billPaidAmount?.amount)) {
-        await updateBillStatusById({id: billId, userId, status: 'paid'})
+
+    if (invoiceId) {
+        await addInvoicePayment({userId, paymentDate: new Date(paymentDate), amount, invoiceId, method});
+        const invoicePaidAmount = await getInvoiceAmountAmountPaidById({id: invoiceId, userId});
+        await updateInvoiceAmountPaidById({
+            id: invoiceId,
+            userId,
+            paidAmount: Number(invoicePaidAmount?.paidAmount) + amount
+        });
+        if (Number(invoicePaidAmount?.paidAmount) + amount >= Number(invoicePaidAmount?.totalAmount)) {
+            await updateInvoiceStatusById({id: invoiceId, userId, status: 'paid'})
+        } else {
+            await updateInvoiceStatusById({id: invoiceId, userId, status: 'partial'})
+        }
     }
     return null
 }

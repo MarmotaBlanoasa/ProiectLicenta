@@ -18,24 +18,25 @@ export const loader: LoaderFunction = async ({request}) => {
         return redirect('/login')
     }
     const outstandingInvoices = await getOutstandingInvoicesByUserId({userId});
+    const totalOutstanding = outstandingInvoices.totalOutstanding._sum.totalAmount;
+    const invoicesData = outstandingInvoices.invoices.map(invoice => {
+        return {
+            ...invoice,
+            client: invoice.client.name
+        }
+    })
     const totalExpensesByCategory = await getTotalExpensesByCategory({userId});
     const totalRevenue = await getTotalRevenueByMonth({userId});
-    return json({outstandingInvoices, totalExpensesByCategory, totalRevenue});
+    return json({totalOutstanding, invoicesData, totalExpensesByCategory, totalRevenue});
 }
 
 export default function DashboardIndex() {
-    const {outstandingInvoices, totalExpensesByCategory, totalRevenue} = useLoaderData() as unknown as {
-        outstandingInvoices: {
-            totalOutstanding: {
-                _sum: {
-                    totalAmount: number
-                }
-            }, invoices: Invoice[]
-        },
+    const {totalOutstanding, invoicesData, totalExpensesByCategory, totalRevenue} = useLoaderData() as unknown as {
+        totalOutstanding: number,
+        invoicesData: Invoice[] & { client: string }[],
         totalExpensesByCategory: { category: Category['name'], totalAmount: number }[],
         totalRevenue: { month: string, totalAmount: number }[]
     };
-    console.log(outstandingInvoices.totalOutstanding._sum.totalAmount)
 
     return (
         <>
@@ -44,8 +45,8 @@ export default function DashboardIndex() {
             <div className='pt-4 flex flex-col gap-4'>
                 <div className='flex flex-col gap-4'>
                     <h2 className='text-lg font-semibold'>Outstanding Invoices -
-                        Total: ${outstandingInvoices.totalOutstanding._sum.totalAmount}</h2>
-                    <DataTable columns={invoiceColumns} data={outstandingInvoices.invoices} header='INVOICES'/>
+                        Total: ${totalOutstanding}</h2>
+                    <DataTable columns={invoiceColumns} data={invoicesData} header='INVOICES'/>
                 </div>
                 <ExpenseChart totalExpensesByCategory={totalExpensesByCategory}/>
             </div>

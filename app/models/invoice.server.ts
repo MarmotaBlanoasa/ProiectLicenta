@@ -97,3 +97,24 @@ export function editInvoice({
         },
     });
 }
+
+export function getInvoiceAmountAmountPaidById({id, userId}: Pick<Invoice, 'id'> & { userId: User["id"] }) {
+    return prisma.invoice.findFirst({
+        where: {id, userId},
+        select: {paidAmount: true, totalAmount: true}
+    });
+}
+
+export function updateInvoiceAmountPaidById({id, userId, paidAmount}: Pick<Invoice, 'id' | 'paidAmount'> & { userId: User["id"] }) {
+    return prisma.invoice.update({
+        where: {id, userId},
+        data: {paidAmount: paidAmount}
+    });
+}
+
+export function updateInvoiceStatusById({id, userId, status}: Pick<Invoice, 'id' | 'status'> & { userId: User["id"] }) {
+    return prisma.invoice.update({
+        where: {id, userId},
+        data: {status}
+    });
+}

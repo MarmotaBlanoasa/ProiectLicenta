@@ -38,7 +38,7 @@ export const invoiceColumns: ColumnDef<Invoice>[] =
                 return (
                     <div>
                         <span
-                            className={`px-2 py-1 rounded-full text-xs ${status === 'paid' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+                            className={`px-2 py-1 rounded-full text-xs ${status === 'paid' ? 'bg-green-500 text-white' : status === 'unpaid' ? 'bg-red-500 text-white' : 'bg-yellow-500 text-white'}`}>
                             {status.toUpperCase()}
                         </span>
                     </div>
@@ -79,7 +79,7 @@ export const invoiceColumns: ColumnDef<Invoice>[] =
             id: 'actions',
             cell: ({row}) => {
                 const invoice = row.original
-                const now = new Date().toISOString().split('T')[0]
+                const now = new Date().toISOString()
                 return (
                     <div className='flex items-center justify-center'>
                         <Dialog>
@@ -117,7 +117,12 @@ export const invoiceColumns: ColumnDef<Invoice>[] =
                                 </DialogHeader>
                                 <div>
                                     <PaymentForm
-                                        defaultValues={{paymentDate: now, amount: 0, method: '', invoiceId: invoice.id}}/>
+                                        defaultValues={{
+                                            paymentDate: now,
+                                            amount: 0,
+                                            method: '',
+                                            invoiceId: invoice.id
+                                        }}/>
                                 </div>
                             </DialogContent>
                         </Dialog>

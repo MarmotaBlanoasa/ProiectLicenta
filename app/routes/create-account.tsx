@@ -25,7 +25,9 @@ const schema = zod.object({
     businessName: zod.string(),
     phone: zod.string(),
     address: zod.string(),
-    taxInfo: zod.string()
+    taxInfo: zod.string(),
+    cashBalance: zod.number(),
+    bankBalance: zod.number(),
 }).refine(data => data.password === data.confirm_password, {
     message: "Passwords do not match",
     path: ["confirm_password"],
@@ -41,7 +43,7 @@ export const action = async ({request}: ActionFunctionArgs) => {
     if (errors) {
         return json({errors, receivedValues}, {status: 400});
     }
-    const {email, password, businessName, phone, address, taxInfo} = data;
+    const {email, password, businessName, phone, address, taxInfo, bankBalance, cashBalance} = data;
     const redirectTo = safeRedirect('/dashboard', "/");
     const existingUser = await getUserByEmail(email);
     if (existingUser) {
@@ -56,7 +58,7 @@ export const action = async ({request}: ActionFunctionArgs) => {
         );
     }
 
-    const user = await createUser(email, password, businessName, phone, address, taxInfo);
+    const user = await createUser(email, password, businessName, phone, address, taxInfo, bankBalance, cashBalance);
 
     return createUserSession({
         redirectTo,
@@ -66,7 +68,7 @@ export const action = async ({request}: ActionFunctionArgs) => {
     });
 };
 export default function CreateAccount() {
-    const {formState: {errors}, handleSubmit, register} = useRemixForm<zod.infer<typeof schema>>({
+    const {formState: {errors}, handleSubmit, register, setValue} = useRemixForm<zod.infer<typeof schema>>({
         resolver,
         defaultValues: {
             email: "",
@@ -75,7 +77,9 @@ export default function CreateAccount() {
             phone: "",
             address: "",
             confirm_password: "",
-            taxInfo: ''
+            taxInfo: '',
+            cashBalance: 0,
+            bankBalance: 0,
         }
     });
     const actionData = useActionData<ActionFunction>();
@@ -134,6 +138,18 @@ export default function CreateAccount() {
                         <label htmlFor='taxInfo'>Tax Info</label>
                         <Input {...register('taxInfo')} id='taxInfo' type='text' name='taxInfo' placeholder='Tax Info'/>
                         {errors.taxInfo && <p className='text-destructive'>{errors.taxInfo.message}</p>}
+                    </div>
+                    <div>
+                        <label htmlFor='bankBalance'>Bank Balance</label>
+                        <Input onBlur={(e)=> setValue('bankBalance', Number(e.target.value))} id='bankBalance' type='number' name='bankBalance'
+                               placeholder='Bank Balance'/>
+                        {errors.bankBalance && <p className='text-destructive'>{errors.bankBalance.message}</p>}
+                    </div>
+                    <div>
+                        <label htmlFor='cashBalance'>Cash Balance</label>
+                        <Input onBlur={(e)=> setValue('cashBalance', Number(e.target.value))} id='cashBalance' type='number' name='cashBalance'
+                               placeholder='Cash Balance'/>
+                        {errors.cashBalance && <p className='text-destructive'>{errors.cashBalance.message}</p>}
                     </div>
                     <input type='hidden' name='redirectTo' value='/dashboard'/>
                     <Button type='submit'>Create Account</Button>

@@ -2,7 +2,7 @@ import Header from "~/components/Header";
 import ExpenseForm from "~/components/Expenses/ExpenseForm";
 import {ActionFunction, json, LoaderFunction, redirect} from "@remix-run/node";
 import {getUserId} from "~/session.server";
-import {getAllCategories} from "~/models/category.server";
+import {getAllCategories} from "~/models/accounting_accounts.server";
 import {useLoaderData} from "@remix-run/react";
 import {Category} from "@prisma/client";
 import {getValidatedFormData} from "remix-hook-form";

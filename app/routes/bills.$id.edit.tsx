@@ -1,9 +1,9 @@
 import Header from "~/components/Header";
 import {ActionFunctionArgs, json, LoaderFunction, redirect} from "@remix-run/node";
-import {getAllCategories} from "~/models/category.server";
+import {getAllCategories} from "~/models/accounting_accounts.server";
 import BillForm from "~/components/Bills/BillForm";
 import {useLoaderData} from "react-router";
-import {Bill, Category, Vendor} from "@prisma/client";
+import {AccountingAccount, Bill, Category, Vendor} from "@prisma/client";
 import {getValidatedFormData} from "remix-hook-form";
 import * as zod from "zod";
 import {BillSchema} from "~/lib/Types";
@@ -40,7 +40,7 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
     if (errors) {
         return json({errors, receivedValues}, {status: 400});
     }
-    const {date, dueDate, categoryId, vendor, notes} = data;
+    const {date, dueDate, accountingAccountId, vendor, notes} = data;
     const amount = data.lineItems.reduce((acc, item) => acc + item.quantity * item.price, 0);
     const userId = await getUserId(request);
     if (!userId) {
@@ -63,7 +63,7 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
             id,
             date: new Date(date),
             dueDate: new Date(dueDate),
-            categoryId,
+            accountingAccountId,
             vendor,
             amount,
             notes: notes || null
@@ -87,12 +87,14 @@ export default function BillsIdEdit() {
         lineItems: { description: string, quantity: number, price: number }[]
     }
     const {billDetails} = useOutletContext() as {
-        billDetails: Bill & { category: Category } & { vendor: { id: string, name: string } }
+        billDetails: Bill & { accountingAccount: { id: AccountingAccount['id'], name: AccountingAccount['name'] } } & {
+            vendor: { id: Vendor['id'], name: Vendor['name'] }
+        }
     }
     const defaultValues = {
         date: new Date(billDetails.date).toISOString(),
         dueDate: new Date(billDetails.dueDate).toISOString(),
-        categoryId: billDetails.category.id,
+        accountingAccountId: billDetails.accountingAccount.id,
         vendor: billDetails.vendor.id || '',
         amount: billDetails.amount,
         notes: billDetails.notes || undefined,

@@ -3,14 +3,7 @@ import {Bill} from "@prisma/client";
 import {format} from "date-fns";
 import {ArrowUpDown, MoreHorizontal} from "lucide-react";
 import {Button} from "~/components/ui/ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger
-} from "../ui/ui/dropdown-menu";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "../ui/ui/dropdown-menu";
 import {Link} from "@remix-run/react";
 import {
     Dialog,
@@ -55,7 +48,7 @@ export const billColumns: ColumnDef<Bill>[] = [
     },
     {
         header: 'Category',
-        accessorKey: 'category'
+        accessorKey: 'accountingAccount'
     },
     {
         header: ({column}) => {

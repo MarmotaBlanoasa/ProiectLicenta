@@ -15,7 +15,7 @@ export default function Navbar(){
                 <NavLink to='/clients' name='Clients' icon='clients'/>
                 <NavLink to='/vendors' name='Vendors' icon='vendors'/>
                 <NavLink to='/bills' name='Bills' icon='bills'/>
-                <NavLink to='/expenses' name='Expenses' icon='expenses'/>
+                {/*<NavLink to='/expenses' name='Expenses' icon='expenses'/>*/}
                 <NavLink to='/invoices' name='Invoices' icon='invoices'/>
                 <NavLink to='/payments' name='Payments' icon='payments'/>
                 <NavLink to='/profile' name='Profile' icon='profile'/>

@@ -10,11 +10,15 @@ import {Input} from "~/components/ui/ui/input";
 import {Button} from "~/components/ui/ui/button";
 import {useRouteData} from "~/utils";
 import {User} from "@prisma/client";
+import {updateAccountingAccount} from "~/models/accounting_accounts.server";
+
 const schema = zod.object({
     businessName: zod.string(),
     phone: zod.string(),
     address: zod.string(),
     taxInfo: zod.string(),
+    bankBalance: zod.number(),
+    cashBalance: zod.number(),
 })
 const resolver = zodResolver(schema);
 export const action = async ({request}: ActionFunctionArgs) => {
@@ -22,7 +26,7 @@ export const action = async ({request}: ActionFunctionArgs) => {
     if (errors) {
         return json({errors, receivedValues}, {status: 400});
     }
-    const { businessName, phone, address, taxInfo} = data;
+    const {businessName, phone, address, taxInfo, bankBalance, cashBalance} = data;
     const userId = await getUserId(request);
     if (!userId) {
         return json(
@@ -35,14 +39,26 @@ export const action = async ({request}: ActionFunctionArgs) => {
         );
     }
 
-    await updateInfoById(userId, businessName, phone, address, taxInfo);
+    await Promise.all([
+        updateInfoById(userId, businessName, phone, address, taxInfo, bankBalance, cashBalance),
+        updateAccountingAccount({userId, code:'5311', balance: cashBalance}),
+        updateAccountingAccount({userId, code:'5121', balance: bankBalance}),
+        ],
+    )
     return redirect('/profile');
 };
-export default function ProfileChangeInformation(){
+export default function ProfileChangeInformation() {
     const {user} = useRouteData('/') as { user: User };
-    const {formState: {errors}, handleSubmit, register} = useRemixForm<zod.infer<typeof schema>>({
+    const {formState: {errors}, handleSubmit, register, setValue} = useRemixForm<zod.infer<typeof schema>>({
         resolver,
-        defaultValues: {businessName: user.businessName || '', phone: user.phone || '', address: user.address || '', taxInfo: user.taxInfo || ''},
+        defaultValues: {
+            businessName: user.businessName || '',
+            phone: user.phone || '',
+            address: user.address || '',
+            taxInfo: user.taxInfo || '' || '',
+            bankBalance: user.bankBalance || 0,
+            cashBalance: user.cashBalance || 0
+        },
     });
     const actionData = useActionData<ActionFunction>();
     return (
@@ -67,8 +83,21 @@ export default function ProfileChangeInformation(){
                 </div>
                 <div>
                     <label htmlFor='taxInfo'>Tax Information</label>
-                    <Input {...register('taxInfo')} id='taxInfo' type='text' name='taxInfo' placeholder='ex VAT ID, Tax ID, etc...'/>
+                    <Input {...register('taxInfo')} id='taxInfo' type='text' name='taxInfo'
+                           placeholder='ex VAT ID, Tax ID, etc...'/>
                     {errors.taxInfo && <p className='text-destructive'>{errors.taxInfo.message}</p>}
+                </div>
+                <div>
+                    <label htmlFor='bankBalance'>Bank Balance</label>
+                    <Input onBlur={(e) => setValue('bankBalance', Number(e.target.value))} id='bankBalance'
+                           type='number' name='bankBalance' placeholder='Bank Balance'/>
+                    {errors.bankBalance && <p className='text-destructive'>{errors.bankBalance.message}</p>}
+                </div>
+                <div>
+                    <label htmlFor='cashBalance'>Cash Balance</label>
+                    <Input onBlur={(e) => setValue('cashBalance', Number(e.target.value))} id='cashBalance'
+                           type='number' name='cashBalance' placeholder='Cash Balance'/>
+                    {errors.cashBalance && <p className='text-destructive'>{errors.cashBalance.message}</p>}
                 </div>
                 <div className='flex gap-4'>
                     <Button type='submit'>Change Information</Button>

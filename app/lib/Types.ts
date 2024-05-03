@@ -35,8 +35,8 @@ export const resolverClient = zodResolver(ClientSchema);
 
 export const lineItemSchema = zod.object({
     description: zod.string(),
-    quantity: zod.number(),
-    price: zod.number()
+    quantity: zod.number().nullable(),
+    price: zod.number().nullable()
 });
 export const invoiceSchema = zod.object({
     invoiceNumber: zod.string(),
@@ -52,7 +52,7 @@ export const resolverInvoice = zodResolver(invoiceSchema);
 export const BillSchema = zod.object({
     date: zod.string().datetime(),
     dueDate: zod.string().datetime(),
-    categoryId: zod.string().min(1, 'Please select a category').max(100),
+    accountingAccountId: zod.string().min(1, 'Please select a category').max(100),
     vendor: zod.string().min(1, 'Please select a vendor').max(100),
     notes: zod.string().optional(),
     lineItems: zod.array(lineItemSchema)

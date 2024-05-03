@@ -20,14 +20,14 @@ export const loader: LoaderFunction = async ({request}) => {
         return {
             ...bill,
             vendor: bill.vendor?.name || 'No Vendor',
-            category: bill.category?.name || 'Uncategorized'
+            accountingAccount: bill.accountingAccount?.name || 'Uncategorized'
         }
     })
     return json({billsData});
 }
 
 export default function AllBills() {
-    const {billsData} = useLoaderData() as { billsData: Bill[] };
+    const {billsData} = useLoaderData() as { billsData: Bill[] & { vendor: string, accountingAccount: string }[]};
     console.log(billsData)
     return (
         <>

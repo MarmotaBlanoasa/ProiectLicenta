@@ -1,5 +1,5 @@
 import {prisma} from "~/db.server";
-import {Bill, Category, User, Vendor} from "@prisma/client";
+import {AccountingAccount, Bill, Category, User, Vendor} from "@prisma/client";
 
 export function getAllBillsByUser({userId}: { userId: User["id"] }) {
     return prisma.bill.findMany({
@@ -10,7 +10,7 @@ export function getAllBillsByUser({userId}: { userId: User["id"] }) {
             dueDate: true,
             amount: true,
             status: true,
-            category: {select: {name: true}},
+            accountingAccount: {select: {name: true}},
             vendor: {select: {id: true, name: true}},
             notes: true,
         },
@@ -28,7 +28,7 @@ export function getBillById({id, userId}: Pick<Bill, "id"> & { userId: User["id"
             dueDate: true,
             amount: true,
             status: true,
-            category: {select: {id:true, name: true}},
+            accountingAccount: {select: {id:true, name: true}},
             vendor: {select: {id: true, name: true}},
             notes: true,
             lineItems:{select: {description: true, quantity: true, price: true}}
@@ -41,13 +41,13 @@ export function addBill({
                             userId,
                             date,
                             dueDate,
-                            categoryId,
+                            accountingAccountId,
                             vendorId,
                             amount,
                             notes
                         }: Pick<Bill, 'date' | 'dueDate' | 'amount' | 'notes'> & {
     userId: User["id"]
-} & { categoryId: Category["id"] } & { vendorId: Vendor["id"] }) {
+} & { accountingAccountId: AccountingAccount["id"] } & { vendorId: Vendor["id"] }) {
     return prisma.bill.create({
         data: {
             date,
@@ -59,9 +59,9 @@ export function addBill({
                     id: userId,
                 },
             },
-            category: {
+            accountingAccount: {
                 connect: {
-                    id: categoryId
+                    id: accountingAccountId
                 }
             },
             vendor: {
@@ -78,13 +78,13 @@ export function editBillById({
                                  userId,
                                  date,
                                  dueDate,
-                                 categoryId,
+                                 accountingAccountId,
                                  vendor,
                                  amount,
                                  notes
                              }: Pick<Bill, 'id' | 'date' | 'dueDate' | 'amount' | 'notes'> & {
     userId: User["id"]
-} & { categoryId: Category["id"] } & { vendor: Vendor["id"] }) {
+} & { accountingAccountId: AccountingAccount["id"] } & { vendor: Vendor["id"] }) {
     return prisma.bill.update({
         where: {id},
         data: {
@@ -97,9 +97,9 @@ export function editBillById({
                     id: userId,
                 },
             },
-            category: {
+            accountingAccount: {
                 connect: {
-                    id: categoryId
+                    id: accountingAccountId
                 }
             },
             vendor: {
@@ -128,7 +128,7 @@ export function getBillsByVendorId({id: vendorId, userId}: Pick<Vendor, "id"> & 
             date: true,
             dueDate: true,
             amount: true,
-            category: {select: {name: true}},
+            accountingAccount: {select: {name: true}},
             vendor: {select: {id: true, name: true}},
             notes: true
         },

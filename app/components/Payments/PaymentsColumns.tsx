@@ -17,8 +17,7 @@ import {paymentMethodsMap} from "~/utils";
 export const paymentsColumns: ColumnDef<Payment>[] = [
     {
         header: 'Payment ID',
-        // accessorKey: 'id',
-        cell: ({row}) => <div>{row.original.id}</div>
+        cell: ({row}) => <div>{row.original.id.toUpperCase()}</div>
     },
     {
         header: 'Payment Date',

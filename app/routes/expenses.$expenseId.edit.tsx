@@ -1,6 +1,6 @@
 import {ActionFunction, json, LoaderFunction, redirect} from "@remix-run/node";
 import {getUserId} from "~/session.server";
-import {getAllCategories} from "~/models/category.server";
+import {getAllCategories} from "~/models/accounting_accounts.server";
 import Header from "~/components/Header";
 import ExpenseForm from "~/components/Expenses/ExpenseForm";
 import {Category, Expense} from "@prisma/client";

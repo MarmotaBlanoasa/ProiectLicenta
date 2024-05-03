@@ -31,10 +31,9 @@ export const loader: LoaderFunction = async ({request}) => {
 }
 
 export default function DashboardIndex() {
-    const {totalOutstanding, invoicesData, totalExpensesByCategory, totalRevenue} = useLoaderData() as unknown as {
+    const {totalOutstanding, invoicesData, totalRevenue} = useLoaderData() as unknown as {
         totalOutstanding: number,
         invoicesData: Invoice[] & { client: string }[],
-        totalExpensesByCategory: { category: Category['name'], totalAmount: number }[],
         totalRevenue: { month: string, totalAmount: number }[]
     };
 
@@ -48,7 +47,6 @@ export default function DashboardIndex() {
                         Total: ${totalOutstanding}</h2>
                     <DataTable columns={invoiceColumns} data={invoicesData} header='INVOICES'/>
                 </div>
-                <ExpenseChart totalExpensesByCategory={totalExpensesByCategory}/>
             </div>
         </>
     )

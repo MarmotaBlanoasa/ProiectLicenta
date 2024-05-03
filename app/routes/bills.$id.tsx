@@ -25,7 +25,7 @@ export const loader: LoaderFunction = async ({request, params}) => {
 export default function BillsBillId() {
     const navigate = useNavigate();
     const {billDetails} = useLoaderData() as {
-        billDetails: Bill & { category: { id: string, name: string } } & { vendor: { id: string, name: string } }
+        billDetails: Bill & { accountingAccount: { id: string, name: string } } & { vendor: { id: string, name: string } }
     };
     const url = useLocation();
     if (url.pathname.includes('edit')) {
@@ -61,7 +61,7 @@ export default function BillsBillId() {
                 </div>
                 <div className='flex flex-col gap-2'>
                     <p className='font-medium'>Category</p>
-                    <p>{billDetails.category.name}</p>
+                    <p>{billDetails.accountingAccount.name}</p>
                 </div>
                 <div className='flex flex-col gap-2'>
                     <p className='font-medium'>Vendor</p>

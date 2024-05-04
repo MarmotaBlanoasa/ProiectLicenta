@@ -21,9 +21,9 @@ async function seed() {
         // }
         const account = await prisma.accountingAccount.create({
             data: {
-                code: '602',
-                name: 'Cheltuieli cu materialele consumabile',
-                type: 'Activ',
+                code: '1012',
+                name: 'Capital subscris varsat',
+                type: 'Pasiv',
                 userId: user.id
             }
         });

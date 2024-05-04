@@ -1,18 +1,23 @@
 import Header from "~/components/Header";
 import {ActionFunctionArgs, json, LoaderFunction, redirect} from "@remix-run/node";
-import {getAllCategories} from "~/models/accounting_accounts.server";
+import {
+    getAllExpenseAccounts,
+    updateAccountingAccount,
+    updateAccountingAccountById
+} from "~/models/accounting_accounts.server";
 import BillForm from "~/components/Bills/BillForm";
 import {useLoaderData} from "react-router";
-import {AccountingAccount, Bill, Category, Vendor} from "@prisma/client";
+import {AccountingAccount, Bill, Vendor} from "@prisma/client";
 import {getValidatedFormData} from "remix-hook-form";
 import * as zod from "zod";
 import {BillSchema} from "~/lib/Types";
 import {getUserId} from "~/session.server";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {editBillById} from "~/models/bill.server";
+import {editBillById, getBillById} from "~/models/bill.server";
 import {getVendorsByUserId} from "~/models/vendor.server";
 import {addLineItem, deleteLineItemByBillId, getLineItemByBillId} from "~/models/lineItem.server";
 import {useOutletContext} from "@remix-run/react";
+import {regulateAccountingAccountBalance} from "~/utils";
 
 const resolver = zodResolver(BillSchema);
 
@@ -26,9 +31,9 @@ export const loader: LoaderFunction = async ({request, params}) => {
         return redirect('/login')
     }
     const vendors = await getVendorsByUserId(userId);
-    const categories = await getAllCategories();
+    const accounts = await getAllExpenseAccounts({userId});
     const lineItems = await getLineItemByBillId({billId: id});
-    return json({categories, vendors, lineItems});
+    return json({accounts, vendors, lineItems});
 }
 export const action = async ({request, params}: ActionFunctionArgs) => {
     const {
@@ -41,7 +46,7 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
         return json({errors, receivedValues}, {status: 400});
     }
     const {date, dueDate, accountingAccountId, vendor, notes} = data;
-    const amount = data.lineItems.reduce((acc, item) => acc + item.quantity * item.price, 0);
+    const amount = data.lineItems.reduce((acc, item) => acc + (item.quantity || 0) * (item.price || 0), 0);
     const userId = await getUserId(request);
     if (!userId) {
         return json(
@@ -56,6 +61,7 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
     if (!id) {
         return redirect('/bills')
     }
+    const bill = await getBillById({id, userId})
     await Promise.all([
         await deleteLineItemByBillId({billId: id}),
         await editBillById({
@@ -69,20 +75,24 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
             notes: notes || null
         })
     ])
-    await Promise.all(data.lineItems.map(async (item) => {
-        await addLineItem({
-            billId: id,
-            description: item.description,
-            quantity: item.quantity,
-            price: item.price
-        });
-    }))
+    await Promise.all(
+        [data.lineItems.map(async (item) => {
+            await addLineItem({
+                billId: id,
+                description: item.description,
+                quantity: item.quantity || 0,
+                price: item.price || 0
+            });
+        }),
+            updateAccountingAccountById({id: accountingAccountId, balance: regulateAccountingAccountBalance(bill?.amount || 0, amount)}),
+            updateAccountingAccount({userId, code: '401', balance: regulateAccountingAccountBalance(bill?.amount || 0, amount)})
+        ])
     return redirect(`/bills/${id}`);
 }
 
 export default function BillsIdEdit() {
-    const {categories, vendors, lineItems} = useLoaderData() as {
-        categories: Category[],
+    const {accounts, vendors, lineItems} = useLoaderData() as {
+        accounts: AccountingAccount[],
         vendors: Vendor[]
         lineItems: { description: string, quantity: number, price: number }[]
     }
@@ -104,7 +114,7 @@ export default function BillsIdEdit() {
         <>
             <Header title={`Edit Bill - #${billDetails.id}`}
                     description={'Edit the details of this bill.'}/>
-            <BillForm categories={categories} defaultValues={defaultValues} vendors={vendors}/>
+            <BillForm accounts={accounts} defaultValues={defaultValues} vendors={vendors}/>
         </>
     )
 }

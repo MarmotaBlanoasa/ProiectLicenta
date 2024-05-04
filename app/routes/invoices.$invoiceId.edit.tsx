@@ -10,6 +10,8 @@ import {addLineItem, deleteLineItemByInvoiceId, getLineItemByInvoiceId} from "~/
 import {DefaultValuesInvoice, invoiceSchema, resolverInvoice as resolver} from "~/lib/Types";
 import {getValidatedFormData} from "remix-hook-form";
 import * as zod from "zod";
+import {updateAccountingAccount} from "~/models/accounting_accounts.server";
+import {regulateAccountingAccountBalance} from "~/utils";
 
 export const loader: LoaderFunction = async ({request, params}) => {
     const userId = await getUserId(request)
@@ -57,7 +59,8 @@ export const action: ActionFunction = async ({request, params}) => {
         return json({errors: {critical: 'An error occurred while updating your information. Please try again later.'}}, {status: 400})
     }
     const {invoiceNumber, dateIssued, dueDate, payeePayer, recurring, lineItems} = data
-    const totalAmount = lineItems.reduce((acc, item) => acc + item.quantity * item.price, 0)
+    const totalAmount = lineItems.reduce((acc, item) => acc + (item.quantity || 0) * (item.price || 0), 0)
+    const invoiceDetails = await getInvoiceById({id: invoiceId, userId})
     await Promise.all([
         await deleteLineItemByInvoiceId({invoiceId}),
         await editInvoice({
@@ -72,15 +75,18 @@ export const action: ActionFunction = async ({request, params}) => {
             totalAmount
         })
     ])
-    await Promise.all(
-        lineItems.map(async item => {
-            await addLineItem({
-                invoiceId,
-                description: item.description,
-                quantity: item.quantity,
-                price: item.price
-            })
-        })
+    await Promise.all([
+            lineItems.map(async item => {
+                await addLineItem({
+                    invoiceId,
+                    description: item.description,
+                    quantity: item.quantity || 0,
+                    price: item.price || 0
+                })
+            }),
+            updateAccountingAccount({userId, code: '4111', balance: regulateAccountingAccountBalance(invoiceDetails?.totalAmount || 0, totalAmount)}),
+            updateAccountingAccount({userId, code: '704', balance: regulateAccountingAccountBalance(invoiceDetails?.totalAmount || 0, totalAmount)})
+        ]
     )
     return redirect(`/invoices/${invoiceId}`)
 }

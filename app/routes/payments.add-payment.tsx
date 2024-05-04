@@ -10,6 +10,8 @@ import {
     updateInvoiceAmountPaidById,
     updateInvoiceStatusById
 } from "~/models/invoice.server";
+import {updateAccountingAccount} from "~/models/accounting_accounts.server";
+import {getAccountingAccountCodeByPaymentMethod} from "~/utils";
 
 export const action: ActionFunction = async ({request}) => {
     const userId = await getUserId(request);
@@ -37,6 +39,8 @@ export const action: ActionFunction = async ({request}) => {
         });
         const billPaidAmount = await getBillAmountAmountPaidById({id: billId, userId});
         await updateBillAmountPaidById({id: billId, userId, amountPaid: Number(billPaidAmount?.amountPaid) + amount});
+        await updateAccountingAccount({userId, code: '401', balance: -amount});
+        await updateAccountingAccount({userId, code: getAccountingAccountCodeByPaymentMethod(method), balance: -amount});
         if (Number(billPaidAmount?.amountPaid) + amount >= Number(billPaidAmount?.amount)) {
             await updateBillStatusById({id: billId, userId, status: 'paid'})
         } else {
@@ -52,6 +56,8 @@ export const action: ActionFunction = async ({request}) => {
             userId,
             paidAmount: Number(invoicePaidAmount?.paidAmount) + amount
         });
+        await updateAccountingAccount({userId, code: '4111', balance: -amount});
+        await updateAccountingAccount({userId, code: getAccountingAccountCodeByPaymentMethod(method), balance: amount});
         if (Number(invoicePaidAmount?.paidAmount) + amount >= Number(invoicePaidAmount?.totalAmount)) {
             await updateInvoiceStatusById({id: invoiceId, userId, status: 'paid'})
         } else {

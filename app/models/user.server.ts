@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 
 import {prisma} from "~/db.server";
 import {accountingAccounts} from "~/utils";
+import {updateAccountingAccount} from "~/models/accounting_accounts.server";
 
 export type {User} from "@prisma/client";
 
@@ -34,6 +35,9 @@ export async function createUser(email: User["email"], password: string, busines
         },
     });
     await generateAccountingAccounts(user.id);
+    await updateAccountingAccount({userId: user.id, code: '5311', balance: cashBalance});
+    await updateAccountingAccount({userId: user.id, code: '5121', balance: bankBalance});
+    await updateAccountingAccount({userId: user.id, code: '1012', balance: bankBalance + cashBalance});
     return user
 }
 

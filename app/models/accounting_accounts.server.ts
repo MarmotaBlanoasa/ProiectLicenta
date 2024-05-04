@@ -9,9 +9,10 @@ export function getAllExpenseAccounts({userId} : {userId: User["id"]}) {
     return prisma.accountingAccount.findMany({
         where: {
             userId,
-            code: {
-                startsWith: '6'
-            },
+            OR: [
+                {code: {startsWith: '62'}},
+                {code: {startsWith: '61'}},
+            ],
         },
     });
 }
@@ -39,6 +40,6 @@ export async function updateAccountingAccount({userId,code, balance}: { code: Ac
     });
     return prisma.accountingAccount.update({
         where: {id :account?.id},
-        data: {balance},
+        data: {balance: (account?.balance || 0) + balance},
     });
 }

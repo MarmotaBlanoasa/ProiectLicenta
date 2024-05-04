@@ -43,6 +43,7 @@ export const action = async ({request}: ActionFunctionArgs) => {
         updateInfoById(userId, businessName, phone, address, taxInfo, bankBalance, cashBalance),
         updateAccountingAccount({userId, code:'5311', balance: cashBalance}),
         updateAccountingAccount({userId, code:'5121', balance: bankBalance}),
+        updateAccountingAccount({userId, code:'1012', balance: bankBalance + cashBalance}),
         ],
     )
     return redirect('/profile');
@@ -60,6 +61,7 @@ export default function ProfileChangeInformation() {
             cashBalance: user.cashBalance || 0
         },
     });
+    console.log(user)
     const actionData = useActionData<ActionFunction>();
     return (
         <>
@@ -90,13 +92,13 @@ export default function ProfileChangeInformation() {
                 <div>
                     <label htmlFor='bankBalance'>Bank Balance</label>
                     <Input onBlur={(e) => setValue('bankBalance', Number(e.target.value))} id='bankBalance'
-                           type='number' name='bankBalance' placeholder='Bank Balance'/>
+                           type='number' name='bankBalance' placeholder='Bank Balance' defaultValue={user.bankBalance}/>
                     {errors.bankBalance && <p className='text-destructive'>{errors.bankBalance.message}</p>}
                 </div>
                 <div>
                     <label htmlFor='cashBalance'>Cash Balance</label>
                     <Input onBlur={(e) => setValue('cashBalance', Number(e.target.value))} id='cashBalance'
-                           type='number' name='cashBalance' placeholder='Cash Balance'/>
+                           type='number' name='cashBalance' placeholder='Cash Balance' defaultValue={user.cashBalance}/>
                     {errors.cashBalance && <p className='text-destructive'>{errors.cashBalance.message}</p>}
                 </div>
                 <div className='flex gap-4'>

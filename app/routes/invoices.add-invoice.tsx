@@ -10,6 +10,7 @@ import {getAllClientsByUser} from "~/models/client.server";
 import {Client} from "@prisma/client";
 import {useLoaderData} from "@remix-run/react";
 import {addLineItem} from "~/models/lineItem.server";
+import {updateAccountingAccount} from "~/models/accounting_accounts.server";
 
 export const action: ActionFunction = async ({request}) => {
     const {
@@ -33,7 +34,7 @@ export const action: ActionFunction = async ({request}) => {
         payeePayer,
         lineItems
     } = data
-    const totalAmount = lineItems.reduce((acc, item) => acc + item.quantity * item.price, 0)
+    const totalAmount = lineItems.reduce((acc, item) => acc + (item.quantity || 0) * (item.price||0), 0)
     const invoiceId = await addInvoice({
         userId,
         clientId: payeePayer,
@@ -48,10 +49,12 @@ export const action: ActionFunction = async ({request}) => {
         await addLineItem({
             invoiceId: invoiceId.id,
             description: item.description,
-            quantity: item.quantity,
-            price: item.price
+            quantity: item.quantity || 0,
+            price: item.price || 0
         })
     })
+    await updateAccountingAccount({userId, code: '4111', balance: totalAmount})
+    await updateAccountingAccount({userId, code: '704', balance: totalAmount})
     return redirect('/invoices')
 }
 

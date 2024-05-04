@@ -1,6 +1,7 @@
 import {LoaderFunction, redirect} from "@remix-run/node";
 import {getUserId} from "~/session.server";
-import {deleteBillById} from "~/models/bill.server";
+import {deleteBillById, getBillById} from "~/models/bill.server";
+import {updateAccountingAccount, updateAccountingAccountById} from "~/models/accounting_accounts.server";
 
 export const loader: LoaderFunction = async ({request, params}) => {
     const {id} = params;
@@ -11,6 +12,11 @@ export const loader: LoaderFunction = async ({request, params}) => {
     if (!userId) {
         return redirect('/login')
     }
-    await deleteBillById({id, userId});
+    const bill = await getBillById({id, userId})
+    await Promise.all([
+        updateAccountingAccountById({id: bill?.accountingAccount?.id || '', balance: -(bill?.amount || 0)}),
+        updateAccountingAccount({userId, code: '401', balance: -(bill?.amount || 0)}),
+        deleteBillById({id, userId})
+    ])
     return redirect('/bills')
 }

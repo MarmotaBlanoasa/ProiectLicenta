@@ -35,7 +35,7 @@ export const action: ActionFunction = async ({request}) => {
         lineItems
     } = data
     const totalTva = lineItems.reduce((acc, item) => acc + ((item.quantity || 0) * (item.price || 0) * (item.tva || 0) / 100), 0)
-    const totalAmount = lineItems.reduce((acc, item) => acc + (item.quantity || 0) * (item.price || 0) + ((item.quantity || 0) * (item.price || 0) * ((item.tva || 0) / 100) + 1), 0)
+    const totalAmount = lineItems.reduce((acc, item) => acc + (item.quantity || 0) * (item.price || 0) * (((item.tva || 0) / 100) + 1), 0);
     const invoiceId = await addInvoice({
         userId,
         clientId: payeePayer,
@@ -57,7 +57,7 @@ export const action: ActionFunction = async ({request}) => {
     })
     await Promise.all([
         updateAccountingAccount({userId, code: '4111', balance: totalAmount}),
-        updateAccountingAccount({userId, code: '704', balance: totalAmount}),
+        updateAccountingAccount({userId, code: '704', balance: totalAmount - totalTva}),
         updateAccountingAccount({userId, code: '4427', balance: totalTva})
     ])
     return redirect('/invoices')

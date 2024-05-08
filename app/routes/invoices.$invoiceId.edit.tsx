@@ -60,10 +60,10 @@ export const action: ActionFunction = async ({request, params}) => {
     }
     const {invoiceNumber, dateIssued, dueDate, payeePayer, recurring, lineItems} = data
     const totalTva = lineItems.reduce((acc, item) => acc + ((item.quantity || 0) * (item.price || 0) * (item.tva || 0) / 100), 0)
-    const totalAmount = lineItems.reduce((acc, item) => acc + (item.quantity || 0) * (item.price || 0), 0)
+    const totalAmount = lineItems.reduce((acc, item) => acc + (item.quantity || 0) * (item.price || 0) * (((item.tva || 0) / 100) + 1), 0);
     const invoiceDetails = await getInvoiceById({id: invoiceId, userId})
-    const oldTotalTva = invoiceDetails?.lineItems.reduce((acc, item) => acc + ((item.quantity || 0) * (item.price || 0) * (item.tva || 0) / 100), 0)
-        await Promise.all([
+    const oldTotalTva = invoiceDetails?.lineItems.reduce((acc, item) => acc + ((item.quantity || 0) * (item.price || 0) * (item.tva || 0) / 100), 0) || 0
+    await Promise.all([
         await deleteLineItemByInvoiceId({invoiceId}),
         await editInvoice({
             userId,
@@ -87,9 +87,21 @@ export const action: ActionFunction = async ({request, params}) => {
                     tva: item.tva || 0
                 })
             }),
-            updateAccountingAccount({userId, code: '4427', balance: regulateAccountingAccountBalance(oldTotalTva || 0, totalTva)}),
-            updateAccountingAccount({userId, code: '4111', balance: regulateAccountingAccountBalance(invoiceDetails?.totalAmount || 0, totalAmount)}),
-            updateAccountingAccount({userId, code: '704', balance: regulateAccountingAccountBalance(invoiceDetails?.totalAmount || 0, totalAmount)})
+            updateAccountingAccount({
+                userId,
+                code: '4427',
+                balance: regulateAccountingAccountBalance(oldTotalTva || 0, totalTva)
+            }),
+            updateAccountingAccount({
+                userId,
+                code: '4111',
+                balance: regulateAccountingAccountBalance((invoiceDetails?.totalAmount || 0), totalAmount)
+            }),
+            updateAccountingAccount({
+                userId,
+                code: '704',
+                balance: regulateAccountingAccountBalance((invoiceDetails?.totalAmount || 0) - oldTotalTva , totalAmount - totalTva)
+            })
         ]
     )
     return redirect(`/invoices/${invoiceId}`)

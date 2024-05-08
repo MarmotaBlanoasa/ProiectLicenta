@@ -21,6 +21,7 @@ export type DefaultValuesInvoice = {
         description: string;
         quantity: number;
         price: number;
+        tva: number;
     }[];
 };
 
@@ -36,7 +37,8 @@ export const resolverClient = zodResolver(ClientSchema);
 export const lineItemSchema = zod.object({
     description: zod.string(),
     quantity: zod.number().nullable(),
-    price: zod.number().nullable()
+    price: zod.number().nullable(),
+    tva: zod.number().nullable(),
 });
 export const invoiceSchema = zod.object({
     invoiceNumber: zod.string(),

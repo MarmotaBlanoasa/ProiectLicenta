@@ -1,5 +1,5 @@
 import {prisma} from "~/db.server";
-import {AccountingAccount, Bill, Category, User, Vendor} from "@prisma/client";
+import {AccountingAccount, Bill, User, Vendor} from "@prisma/client";
 
 export function getAllBillsByUser({userId}: { userId: User["id"] }) {
     return prisma.bill.findMany({
@@ -28,10 +28,10 @@ export function getBillById({id, userId}: Pick<Bill, "id"> & { userId: User["id"
             dueDate: true,
             amount: true,
             status: true,
-            accountingAccount: {select: {id:true, name: true}},
+            accountingAccount: {select: {id:true, name: true, code: true}},
             vendor: {select: {id: true, name: true}},
             notes: true,
-            lineItems:{select: {description: true, quantity: true, price: true}}
+            lineItems:{select: {description: true, quantity: true, price: true, tva: true}}
         },
     });
 

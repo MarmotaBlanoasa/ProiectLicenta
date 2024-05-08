@@ -34,7 +34,8 @@ export const action: ActionFunction = async ({request}) => {
         payeePayer,
         lineItems
     } = data
-    const totalAmount = lineItems.reduce((acc, item) => acc + (item.quantity || 0) * (item.price||0), 0)
+    const totalTva = lineItems.reduce((acc, item) => acc + ((item.quantity || 0) * (item.price || 0) * (item.tva || 0) / 100), 0)
+    const totalAmount = lineItems.reduce((acc, item) => acc + (item.quantity || 0) * (item.price || 0) + ((item.quantity || 0) * (item.price || 0) * ((item.tva || 0) / 100) + 1), 0)
     const invoiceId = await addInvoice({
         userId,
         clientId: payeePayer,
@@ -50,11 +51,15 @@ export const action: ActionFunction = async ({request}) => {
             invoiceId: invoiceId.id,
             description: item.description,
             quantity: item.quantity || 0,
-            price: item.price || 0
+            price: item.price || 0,
+            tva: item.tva || 0
         })
     })
-    await updateAccountingAccount({userId, code: '4111', balance: totalAmount})
-    await updateAccountingAccount({userId, code: '704', balance: totalAmount})
+    await Promise.all([
+        updateAccountingAccount({userId, code: '4111', balance: totalAmount}),
+        updateAccountingAccount({userId, code: '704', balance: totalAmount}),
+        updateAccountingAccount({userId, code: '4427', balance: totalTva})
+    ])
     return redirect('/invoices')
 }
 
@@ -81,7 +86,7 @@ export default function InvoicesAddInvoice() {
         totalAmount: 0,
         status: 'unpaid' as 'paid' | 'unpaid' | 'overdue',
         recurring: false,
-        lineItems: [{description: '', quantity: 0, price: 0}]
+        lineItems: [{description: '', quantity: 0, price: 0, tva: 19}]
     }
     const {clientsData} = useLoaderData() as { clientsData: Client[] };
     return (

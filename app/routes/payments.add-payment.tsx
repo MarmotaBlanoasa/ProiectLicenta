@@ -38,9 +38,11 @@ export const action: ActionFunction = async ({request}) => {
             method
         });
         const billPaidAmount = await getBillAmountAmountPaidById({id: billId, userId});
-        await updateBillAmountPaidById({id: billId, userId, amountPaid: Number(billPaidAmount?.amountPaid) + amount});
-        await updateAccountingAccount({userId, code: '401', balance: -amount});
-        await updateAccountingAccount({userId, code: getAccountingAccountCodeByPaymentMethod(method), balance: -amount});
+        await Promise.all([
+            updateBillAmountPaidById({id: billId, userId, amountPaid: Number(billPaidAmount?.amountPaid) + amount}),
+            updateAccountingAccount({userId, code: '401', balance: -amount}),
+            updateAccountingAccount({userId, code: getAccountingAccountCodeByPaymentMethod(method), balance: -amount})
+        ])
         if (Number(billPaidAmount?.amountPaid) + amount >= Number(billPaidAmount?.amount)) {
             await updateBillStatusById({id: billId, userId, status: 'paid'})
         } else {
@@ -51,13 +53,16 @@ export const action: ActionFunction = async ({request}) => {
     if (invoiceId) {
         await addInvoicePayment({userId, paymentDate: new Date(paymentDate), amount, invoiceId, method});
         const invoicePaidAmount = await getInvoiceAmountAmountPaidById({id: invoiceId, userId});
-        await updateInvoiceAmountPaidById({
-            id: invoiceId,
-            userId,
-            paidAmount: Number(invoicePaidAmount?.paidAmount) + amount
-        });
-        await updateAccountingAccount({userId, code: '4111', balance: -amount});
-        await updateAccountingAccount({userId, code: getAccountingAccountCodeByPaymentMethod(method), balance: amount});
+        await Promise.all([
+            updateInvoiceAmountPaidById({
+                id: invoiceId,
+                userId,
+                paidAmount: Number(invoicePaidAmount?.paidAmount) + amount
+            }),
+            updateAccountingAccount({userId, code: '4111', balance: -amount}),
+            updateAccountingAccount({userId, code: getAccountingAccountCodeByPaymentMethod(method), balance: amount})
+
+        ])
         if (Number(invoicePaidAmount?.paidAmount) + amount >= Number(invoicePaidAmount?.totalAmount)) {
             await updateInvoiceStatusById({id: invoiceId, userId, status: 'paid'})
         } else {

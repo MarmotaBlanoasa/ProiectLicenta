@@ -23,11 +23,8 @@ model User {
   bills             Bill[]
   invoices          Invoice[]
   vendors           Vendor[]
-  merchants         Merchant[]
-  expenses          Expense[]
   payments          Payment[]
   accountingAccount AccountingAccount[]
-  InventoryItem     InventoryItem[]
 }
 
 model Password {
@@ -63,13 +60,6 @@ model Vendor {
   bills   Bill[]
 }
 
-model Category {
-  id       String    @id @default(cuid())
-  name     String
-  type     String
-  expenses Expense[]
-}
-
 model Bill {
   id                  String             @id @default(cuid())
   date                DateTime
@@ -86,7 +76,6 @@ model Bill {
   lineItems           LineItem[]
   accountingAccount   AccountingAccount? @relation(fields: [accountingAccountId], references: [id])
   accountingAccountId String?
-  inventoryChanges    InventoryChanges[]
 }
 
 model Invoice {
@@ -107,7 +96,6 @@ model Invoice {
   payments            Payment[]
   accountingAccount   AccountingAccount? @relation(fields: [accountingAccountId], references: [id])
   accountingAccountId String?
-  inventoryChanges    InventoryChanges[]
 }
 
 model LineItem {
@@ -115,31 +103,11 @@ model LineItem {
   description String
   quantity    Int
   price       Float
+  tva         Float    @default(19)
   invoiceId   String?
   invoice     Invoice? @relation(fields: [invoiceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   billId      String?
   bill        Bill?    @relation(fields: [billId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-}
-
-model Expense {
-  id         String   @id @default(cuid())
-  date       DateTime
-  amount     Float
-  notes      String?
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  merchantId String
-  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-}
-
-model Merchant {
-  id       String    @id @default(cuid())
-  name     String
-  userId   String
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  expenses Expense[]
 }
 
 model Payment {
@@ -165,29 +133,4 @@ model AccountingAccount {
   user     User      @relation(fields: [userId], references: [id])
   invoices Invoice[]
   bills    Bill[]
-}
-
-model InventoryItem {
-  id               String             @id @default(cuid())
-  name             String
-  description      String?
-  quantity         Int
-  unitCost         Float
-  totalCost        Float              @default(0)
-  minimumLevel     Int
-  userId           String
-  user             User               @relation(fields: [userId], references: [id])
-  inventoryChanges InventoryChanges[]
-}
-
-model InventoryChanges {
-  id              String        @id @default(cuid())
-  inventoryItemId String
-  inventoryItem   InventoryItem @relation(fields: [inventoryItemId], references: [id])
-  quantityUsed    Int
-  dateUsed        DateTime
-  invoiceId       String?
-  invoice         Invoice?      @relation(fields: [invoiceId], references: [id])
-  billId          String?
-  bill            Bill?         @relation(fields: [billId], references: [id])
 }

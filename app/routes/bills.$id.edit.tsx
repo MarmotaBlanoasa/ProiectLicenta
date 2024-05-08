@@ -46,7 +46,8 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
         return json({errors, receivedValues}, {status: 400});
     }
     const {date, dueDate, accountingAccountId, vendor, notes} = data;
-    const amount = data.lineItems.reduce((acc, item) => acc + (item.quantity || 0) * (item.price || 0), 0);
+    const amount = data.lineItems.reduce((acc, item) => acc + (item.quantity || 0) * (item.price || 0) * (((item.tva || 0) / 100) + 1), 0);
+    const totalTva = data.lineItems.reduce((acc, item) => acc + ((item.quantity || 0) * (item.price || 0) * (item.tva || 0) / 100), 0);
     const userId = await getUserId(request);
     if (!userId) {
         return json(
@@ -62,6 +63,7 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
         return redirect('/bills')
     }
     const bill = await getBillById({id, userId})
+    const oldTva = bill?.lineItems.reduce((acc, item) => acc + ((item.quantity || 0) * (item.price || 0) * (item.tva || 0) / 100), 0) || 0
     await Promise.all([
         await deleteLineItemByBillId({billId: id}),
         await editBillById({
@@ -81,10 +83,12 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
                 billId: id,
                 description: item.description,
                 quantity: item.quantity || 0,
-                price: item.price || 0
+                price: item.price || 0,
+                tva: item.tva || 0,
             });
         }),
-            updateAccountingAccountById({id: accountingAccountId, balance: regulateAccountingAccountBalance(bill?.amount || 0, amount)}),
+            updateAccountingAccountById({id: accountingAccountId, balance: regulateAccountingAccountBalance((bill?.amount || 0) - oldTva, amount - totalTva)}),
+            updateAccountingAccount({userId, code: '4426', balance: regulateAccountingAccountBalance(oldTva,totalTva)}),
             updateAccountingAccount({userId, code: '401', balance: regulateAccountingAccountBalance(bill?.amount || 0, amount)})
         ])
     return redirect(`/bills/${id}`);

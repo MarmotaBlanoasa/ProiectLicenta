@@ -16,7 +16,7 @@ export function getInvoiceById({id, userId}: { id: Invoice['id'], userId: User["
     return prisma.invoice.findFirst({
         where: {id, userId},
         include:{
-            lineItems:{select:{description:true, quantity:true, price:true}},
+            lineItems:{select:{description:true, quantity:true, price:true, tva:true}},
             client:true
         },
         orderBy: {dateIssued: 'desc'},

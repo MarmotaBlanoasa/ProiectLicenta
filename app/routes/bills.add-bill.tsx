@@ -4,17 +4,16 @@ import {ActionFunctionArgs, json, LoaderFunction, redirect} from "@remix-run/nod
 import {getUserId} from "~/session.server";
 import {getValidatedFormData} from "remix-hook-form";
 import {
-    getAllCategories,
-    getAllExpenseAccounts, updateAccountingAccount,
+    getAllExpenseAccounts,
+    updateAccountingAccount,
     updateAccountingAccountById
 } from "~/models/accounting_accounts.server";
 import {useLoaderData} from "react-router";
 import {addBill} from "~/models/bill.server";
-import {AccountingAccount, Category, Vendor} from "@prisma/client";
+import {AccountingAccount, Vendor} from "@prisma/client";
 import BillForm from "~/components/Bills/BillForm";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {BillSchema} from "~/lib/Types";
-import {getAllClientsByUser} from "~/models/client.server";
 import {addLineItem} from "~/models/lineItem.server";
 import {getVendorsByUserId} from "~/models/vendor.server";
 
@@ -41,7 +40,8 @@ export const action = async ({request}: ActionFunctionArgs) => {
     }
     console.log(data)
     const {date, dueDate, accountingAccountId, vendor, notes, lineItems} = data;
-    const amount = lineItems.reduce((acc, item) => acc + (item.quantity || 0) * (item.price || 0), 0);
+    const amount = lineItems.reduce((acc, item) => acc + (item.quantity || 0) * (item.price || 0) * (((item.tva || 0) / 100) + 1), 0);
+    const totalTva = lineItems.reduce((acc, item) => acc + ((item.quantity || 0) * (item.price || 0) * (item.tva || 0) / 100), 0);
     const userId = await getUserId(request);
     if (!userId) {
         return json(
@@ -69,26 +69,29 @@ export const action = async ({request}: ActionFunctionArgs) => {
                 description: item.description,
                 quantity: item.quantity || 0,
                 price: item.price || 0,
+                tva: item.tva || 0,
             });
         })
     );
-    await updateAccountingAccountById({id: accountingAccountId, balance: amount});
-    await updateAccountingAccount({userId, code:'401', balance: amount})
+    await Promise.all([
+        updateAccountingAccountById({id: accountingAccountId, balance: amount - totalTva}),
+        updateAccountingAccount({userId, code: '4426', balance: totalTva}),
+        updateAccountingAccount({userId, code: '401', balance: amount}),
+    ]);
     return redirect('/bills');
 }
 
 
 export default function AddBill() {
-    const {accounts, vendors} = useLoaderData() as { accounts: AccountingAccount[], vendors: Vendor[]};
+    const {accounts, vendors} = useLoaderData() as { accounts: AccountingAccount[], vendors: Vendor[] };
     const defaultValues = {
         date: new Date().toISOString(),
         dueDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
         accountingAccountId: '',
         vendor: '',
         notes: '',
-        lineItems: [{description: '', quantity: null, price: null}]
+        lineItems: [{description: '', quantity: null, price: null, tva: 19}]
     }
-    console.log(accounts)
     return (
         <>
             <Header title='Add New Bill'

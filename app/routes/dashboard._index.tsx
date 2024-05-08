@@ -3,12 +3,10 @@ import {json, LoaderFunction, redirect} from "@remix-run/node";
 import {getUserId} from "~/session.server";
 import {
     getOutstandingInvoicesByUserId,
-    getTotalExpensesByCategory,
     getTotalRevenueByMonth,
 } from "~/models/dashboard.server";
 import {useLoaderData} from "@remix-run/react";
-import {Category, Invoice} from "@prisma/client";
-import ExpenseChart from "~/components/Dashboard/ExpenseChart";
+import {Invoice} from "@prisma/client";
 import {DataTable} from "~/components/DataTable";
 import {invoiceColumns} from "~/components/Invoices/InvoiceColumns";
 
@@ -25,9 +23,8 @@ export const loader: LoaderFunction = async ({request}) => {
             client: invoice.client.name
         }
     })
-    const totalExpensesByCategory = await getTotalExpensesByCategory({userId});
     const totalRevenue = await getTotalRevenueByMonth({userId});
-    return json({totalOutstanding, invoicesData, totalExpensesByCategory, totalRevenue});
+    return json({totalOutstanding, invoicesData, totalRevenue});
 }
 
 export default function DashboardIndex() {

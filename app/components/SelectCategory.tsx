@@ -1,5 +1,5 @@
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "~/components/ui/ui/select";
-import {AccountingAccount, Category} from "@prisma/client";
+import {AccountingAccount} from "@prisma/client";
 
 export default function SelectCategory({onValueChange, accounts, defaultValue}: {
     onValueChange: any,

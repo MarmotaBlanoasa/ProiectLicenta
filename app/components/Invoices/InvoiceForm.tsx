@@ -55,8 +55,10 @@ export default function InvoiceForm({defaultValues, clients}: InvoiceFormProps) 
             </div>
             <h2 className='text-lg font-semibold'>Items/Services</h2>
             <LineItemsForm lineItems={lineItems} register={register} setValue={setValue} errors={errors}/>
+            <h2 className='text-lg font-semibold'>Subtotal Amount:
+                ${lineItems.reduce((acc, item) => acc + (item.quantity || 0) * (item.price || 0), 0)}</h2>
             <h2 className='text-lg font-semibold'>Total Amount:
-                ${lineItems.reduce((acc, item) => acc + item.quantity * item.price, 0)}</h2>
+                ${lineItems.reduce((acc, item) => acc + (item.quantity || 0) * (item.price || 0) * (((item.tva || 1) / 100) + 1), 0)}</h2>
             <div className='flex gap-4'>
                 <Button type='submit' disabled={isSubmitting}>{isEdit ? 'Edit' : 'Add'} Invoice</Button>
                 <Button type='button' variant='outline' onClick={() => navigate(-1)}>Go back</Button>

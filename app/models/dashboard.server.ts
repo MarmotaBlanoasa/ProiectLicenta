@@ -52,30 +52,6 @@ export async function getRecentPaymentsByUserId({userId}: { userId: User["id"] }
     });
 }
 
-export async function getTotalExpensesByCategory({userId}: { userId: User["id"] }) {
-    const expensesSumByCategory = await prisma.expense.groupBy({
-        by: ['categoryId'],
-        where: {userId},
-        _sum: {
-            amount: true
-        },
-    });
-
-    return await Promise.all(
-        expensesSumByCategory.map(async (expense) => {
-            const category = await prisma.category.findUnique({
-                where: {id: expense.categoryId},
-                select: {name: true},
-            });
-
-            return {
-                category: category?.name,
-                totalAmount: expense._sum.amount,
-            };
-        })
-    );
-}
-
 export async function getTotalRevenueByMonth({userId}: { userId: User["id"] }) {
     const revenueByMonth = await prisma.invoice.groupBy({
         by: ['dateIssued'],

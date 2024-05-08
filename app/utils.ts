@@ -173,14 +173,11 @@ export const accountingAccounts: AccountingAccountsType[] = [
 export function getAccountingAccountCodeByPaymentMethod(method: string) {
     if (method === 'cash') {
         return '5311';
-    }else{
+    } else {
         return '5121';
     }
 }
 
 export function regulateAccountingAccountBalance(oldBalance: number, newBalance: number) {
-    if (oldBalance === newBalance) {
-        return newBalance;
-    }
     return newBalance - oldBalance;
 }

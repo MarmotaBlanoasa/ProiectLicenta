@@ -3,12 +3,13 @@ import {LineItem} from ".prisma/client";
 import {Bill, Invoice, User} from "@prisma/client";
 import {editInvoice} from "~/models/invoice.server";
 
-export function addLineItem({invoiceId, billId, description, quantity, price} : Pick<LineItem, 'quantity' | 'description' | 'price'> & {invoiceId?: Invoice['id']} & {billId?: Bill['id']}) {
+export function addLineItem({invoiceId, billId, description, quantity, price, tva} : Pick<LineItem, 'quantity' | 'description' | 'price' | 'tva'> & {invoiceId?: Invoice['id']} & {billId?: Bill['id']}) {
     return prisma.lineItem.create({
         data: {
             description,
             quantity,
             price,
+            tva,
             invoiceId,
             billId,
         },

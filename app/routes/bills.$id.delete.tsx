@@ -15,7 +15,7 @@ export const loader: LoaderFunction = async ({request, params}) => {
     const bill = await getBillById({id, userId})
     const totalTva = bill?.lineItems.reduce((acc, item) => acc + ((item.quantity || 0) * (item.price || 0) * (item.tva || 0) / 100), 0) || 0
     await Promise.all([
-        updateAccountingAccountById({id: bill?.accountingAccount?.id || '', balance: -(bill?.amount || 0) - totalTva}),
+        updateAccountingAccountById({id: bill?.accountingAccount?.id || '', balance: -(bill?.amount || 0) + totalTva}),
         updateAccountingAccount({userId, code: '401', balance: -(bill?.amount || 0)}),
         updateAccountingAccount({userId, code: '4426', balance: -totalTva}),
         deleteBillById({id, userId})

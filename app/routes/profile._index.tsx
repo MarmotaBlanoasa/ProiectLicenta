@@ -33,12 +33,20 @@ export default function Profile_index() {
                     <p>{user.address || 'No address provided'}</p>
                 </div>
                 <div className='flex flex-col gap-2'>
-                    <p className='font-medium'>Phone Number</p>
-                    <p>{user.phone || 'No phone provided'}</p>
+                    <p className='font-medium'>Numar de telefon</p>
+                    <p>{user.phone || 'Numarul de telefon nu a fost introdus'}</p>
                 </div>
                 <div className='flex flex-col gap-2'>
-                    <p className='font-medium'>Tax Information</p>
-                    <p>{user.taxInfo || 'No tax information provided'}</p>
+                    <p className='font-medium'>CUI</p>
+                    <p>{user.taxInfo || 'CUI nu a fost introdus'}</p>
+                </div>
+                <div className='flex flex-col gap-2'>
+                    <p className='font-medium'>Cash</p>
+                    <p>{user.cashBalance || 'Balanta nu a fost adaugata'} RON</p>
+                </div>
+                <div className='flex flex-col gap-2'>
+                    <p className='font-medium'>Banca</p>
+                    <p>{user.bankBalance || 'Balanata nu a fost adaugata'} RON</p>
                 </div>
             </div>
         </>

@@ -1,5 +1,6 @@
 import {prisma} from "~/db.server";
 import {User} from "@prisma/client";
+import {eachMonthOfInterval, endOfYear, format, startOfYear} from "date-fns";
 
 
 export function getRecentInvoicesByUserId({userId}: { userId: User["id"] }) {
@@ -10,17 +11,17 @@ export function getRecentInvoicesByUserId({userId}: { userId: User["id"] }) {
     });
 }
 
+// Facturi trimise cu termen de plata depasit -- creante
 export async function getOutstandingInvoicesByUserId({userId}: { userId: User["id"] }) {
     const totalOutstanding = await prisma.invoice.aggregate({
-        where: {userId, status: {not: 'paid'}},
+        where: {userId, status: {not: 'paid'}, dueDate: {lt: new Date()}},
         orderBy: {dueDate: 'asc'},
         _sum: {
             totalAmount: true
         },
-        take: 5,
     });
     const invoices = await prisma.invoice.findMany({
-        where: {userId, status: {not: 'paid'}},
+        where: {userId, status: {not: 'paid'}, dueDate: {lt: new Date()}},
         orderBy: {dueDate: 'asc'},
         take: 5,
         include: {client: {select: {name: true}}}
@@ -28,16 +29,17 @@ export async function getOutstandingInvoicesByUserId({userId}: { userId: User["i
     return {totalOutstanding, invoices};
 }
 
+// Facturi primite cu termen de plata depasit -- datorii
 export async function getOutstandingBillsByUserId({userId}: { userId: User["id"] }) {
     const totalOutstanding = await prisma.bill.aggregate({
-        where: {userId, status: 'unpaid'},
+        where: {userId, status: {not:'paid'}, dueDate: {lt: new Date()}},
         orderBy: {dueDate: 'asc'},
         _sum: {
             amount: true
         }
     });
     const bills = await prisma.bill.findMany({
-        where: {userId, status: 'unpaid'},
+        where: {userId, status: {not:'paid'}, dueDate: {lt: new Date()}},
         orderBy: {dueDate: 'asc'},
         take: 5,
     });
@@ -69,4 +71,53 @@ export async function getTotalRevenueByMonth({userId}: { userId: User["id"] }) {
             };
         })
     );
+}
+
+export async function getProfitLossByMonth({userId}: { userId: User["id"] }) {
+    const revenueByMonth = await prisma.invoice.groupBy({
+        by: ['dateIssued'],
+        where: {userId, status: 'paid'},
+        _sum: {
+            totalAmount: true
+        },
+    });
+
+    const expensesByMonth = await prisma.bill.groupBy({
+        by: ['date'],
+        where: {userId, status: 'paid'},
+        _sum: {
+            amount: true
+        },
+    });
+    const year = new Date().getFullYear();
+    const months = eachMonthOfInterval({
+        start: startOfYear(new Date(year, 0, 1)),
+        end: endOfYear(new Date(year, 11, 31))
+    }).map(date => format(date, 'yyyy-MM'));
+
+    // Existing data fetch logic here...
+
+    // Initialize profit/loss object with all months set to zero
+    const profitLossByMonth = months.reduce((acc:any, month) => {
+        acc[month] = 0;
+        return acc;
+    }, {});
+
+    // Aggregate revenue and expenses
+    revenueByMonth.forEach(item => {
+        const month = format(new Date(item.dateIssued), 'yyyy-MM');
+        profitLossByMonth[month] += item._sum.totalAmount || 0;
+    });
+
+    expensesByMonth.forEach(item => {
+        const month = format(new Date(item.date), 'yyyy-MM');
+        profitLossByMonth[month] -= item._sum.amount || 0;
+    });
+
+    // Convert to array format expected by the frontend
+    return Object.keys(profitLossByMonth).map(month => ({
+        month,
+        profitLoss: profitLossByMonth[month]
+    }));
+
 }

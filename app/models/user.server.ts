@@ -121,3 +121,15 @@ export async function generateAccountingAccounts(userId: User["id"]) {
         });
     }
 }
+
+export async function getCashBankBalance(userId: User["id"]) {
+    const cash = await prisma.accountingAccount.findFirst({
+        where: {userId, code: '5311'},
+        select:{balance: true}
+    });
+    const bank = await prisma.accountingAccount.findFirst({
+        where: {userId, code: '5121'},
+        select:{balance: true}
+    });
+    return {cash, bank};
+}

@@ -6,6 +6,7 @@ import {getUser} from "~/session.server";
 import stylesheet from "~/tailwind.css";
 import {isProtectedRoute, protectedRouteIds} from "~/utils";
 import Navbar from "~/components/Navbar";
+import {getCashBankBalance} from "~/models/user.server";
 
 export const links: LinksFunction = () => [
     {rel: "stylesheet", href: stylesheet},
@@ -18,7 +19,13 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
     if (!user && isProtectedRoute(url.pathname)) {
         return redirect('/login');
     }
-    return json({user: user});
+    const cashBankBalance = await getCashBankBalance(user?.id || '');
+    const userInformation = {
+        ...user,
+        bankBalance: cashBankBalance?.bank?.balance || 0,
+        cashBankBalance: cashBankBalance?.cash?.balance || 0,
+    }
+    return json({user: userInformation});
 };
 
 export default function App() {

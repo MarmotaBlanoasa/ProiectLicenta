@@ -32,14 +32,15 @@ export async function getOutstandingInvoicesByUserId({userId}: { userId: User["i
 // Facturi primite cu termen de plata depasit -- datorii
 export async function getOutstandingBillsByUserId({userId}: { userId: User["id"] }) {
     const totalOutstanding = await prisma.bill.aggregate({
-        where: {userId, status: {not:'paid'}, dueDate: {lt: new Date()}},
+        where: {userId, status: {not: 'paid'}, dueDate: {lt: new Date()}},
         orderBy: {dueDate: 'asc'},
         _sum: {
             amount: true
         }
     });
     const bills = await prisma.bill.findMany({
-        where: {userId, status: {not:'paid'}, dueDate: {lt: new Date()}},
+        where: {userId, status: {not: 'paid'}, dueDate: {lt: new Date()}},
+        include:{vendor: {select: {name: true}}, accountingAccount: {select: {name: true}}},
         orderBy: {dueDate: 'asc'},
         take: 5,
     });
@@ -98,7 +99,7 @@ export async function getProfitLossByMonth({userId}: { userId: User["id"] }) {
     // Existing data fetch logic here...
 
     // Initialize profit/loss object with all months set to zero
-    const profitLossByMonth = months.reduce((acc:any, month) => {
+    const profitLossByMonth = months.reduce((acc: any, month) => {
         acc[month] = 0;
         return acc;
     }, {});
@@ -120,4 +121,42 @@ export async function getProfitLossByMonth({userId}: { userId: User["id"] }) {
         profitLoss: profitLossByMonth[month]
     }));
 
+}
+
+export async function getAllAccountBalances(userId: string) {
+    // Fetch all accounts with their current balances
+    const accounts = await prisma.accountingAccount.findMany({
+        where: {
+            userId,
+            OR: [
+                {
+                    code: {
+                        startsWith: '61'
+                    }
+                },
+                {
+                    code: {
+                        startsWith: '62'
+                    }
+                },
+                {
+                    code: '704'
+                }
+            ]
+        },
+        select: {
+            code: true,
+            name: true,
+            balance: true
+        }
+    })
+
+    const totalExpensesAccounts61 = accounts.filter(account => account.code.startsWith('61')).reduce((total, account) => total + account.balance, 0);
+    const totalExpensesAccounts62 = accounts.filter(account => account.code.startsWith('62')).reduce((total, account) => total + account.balance, 0);
+    const revenue = accounts.find(account => account.code === '704')?.balance || 0
+
+    return {
+        accounts,
+        totalProfitOrLoss: revenue - (totalExpensesAccounts61 + totalExpensesAccounts62)
+    };
 }

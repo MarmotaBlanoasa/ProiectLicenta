@@ -28,7 +28,7 @@ export default function AllClients(){
                     <Link to='/clients/add-client'>
                         <Button className='flex gap-2 items-center'>
                             <Svg icon='plus'/>
-                            Add New Client
+                            Adauga client nou
                         </Button>
                     </Link>
                 </div>

@@ -22,7 +22,7 @@ export default function ProfitLossChart({ profitLossData } : { profitLossData: {
 
     return (
         <div className='h-[450px]'>
-            <h3>Profit/Pierdere pentru anul {new Date().getFullYear()}</h3>
+            <h2 className='font-medium text-center'>Profit/Pierdere pentru anul {new Date().getFullYear()}</h2>
             <Line data={data} options={options} />
         </div>
     );

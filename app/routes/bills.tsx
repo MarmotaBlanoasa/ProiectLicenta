@@ -1,6 +1,6 @@
 import {Outlet} from "@remix-run/react";
 
-export default function Transactions() {
+export default function Bills() {
     return (
         <div className='ms-[15%] px-12 py-8'>
             <Outlet/>

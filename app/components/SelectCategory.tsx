@@ -1,20 +1,20 @@
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "~/components/ui/ui/select";
-import {Category} from "@prisma/client";
+import {AccountingAccount} from "@prisma/client";
 
-export default function SelectCategory({onValueChange, categories, defaultValue}: {
+export default function SelectCategory({onValueChange, accounts, defaultValue}: {
     onValueChange: any,
-    categories: Category[],
+    accounts: AccountingAccount[],
     defaultValue?: string
 }) {
     return (
-        <Select defaultValue={defaultValue} onValueChange={(value) => onValueChange('categoryId', value)}>
+        <Select defaultValue={defaultValue} onValueChange={(value) => onValueChange('accountingAccountId', value)}>
             <SelectTrigger>
                 <SelectValue placeholder="Select Category"/>
             </SelectTrigger>
             <SelectContent>
-                {categories.map((category, index) => (
-                    <SelectItem key={index} value={category.id}>
-                        {category.name} - {category.type}
+                {accounts.map((account, index) => (
+                    <SelectItem key={index} value={account.id}>
+                        {account.name}
                     </SelectItem>
                 ))}
             </SelectContent>

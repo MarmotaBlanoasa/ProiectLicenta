@@ -96,14 +96,12 @@ export async function getProfitLossByMonth({userId}: { userId: User["id"] }) {
         end: endOfYear(new Date(year, 11, 31))
     }).map(date => format(date, 'yyyy-MM'));
 
-    // Existing data fetch logic here...
 
     // Initialize profit/loss object with all months set to zero
     const profitLossByMonth = months.reduce((acc: any, month) => {
         acc[month] = 0;
         return acc;
     }, {});
-
     // Aggregate revenue and expenses
     revenueByMonth.forEach(item => {
         const month = format(new Date(item.dateIssued), 'yyyy-MM');
@@ -160,3 +158,6 @@ export async function getAllAccountBalances(userId: string) {
         totalProfitOrLoss: revenue - (totalExpensesAccounts61 + totalExpensesAccounts62)
     };
 }
+
+
+

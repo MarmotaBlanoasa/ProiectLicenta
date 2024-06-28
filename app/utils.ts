@@ -92,11 +92,11 @@ type PaymentMethod = { value: string; text: string; };
 type PaymentMethodsMap = { [key: string]: string };
 export const paymentMethods = [
     {value: 'cash', text: 'Cash'},
-    {value: 'bank_transfer', text: 'Bank Transfer'},
-    {value: 'credit_card', text: 'Credit Card'},
-    {value: 'debit_card', text: 'Debit Card'},
-    {value: 'online_payment', text: 'Online Payment'},
-    {value: 'mobile_payment', text: 'Mobile Payment'},
+    {value: 'bank_transfer', text: 'Transfer Bancar'},
+    {value: 'credit_card', text: 'Card de Credit'},
+    {value: 'debit_card', text: 'Card de Debit'},
+    {value: 'online_payment', text: 'Plata Online'},
+    {value: 'mobile_payment', text: 'Plata Mobila'},
 ] as PaymentMethod[];
 export const paymentMethodsMap = paymentMethods.reduce<PaymentMethodsMap>((acc, curr) => {
     acc[curr.value] = curr.text;

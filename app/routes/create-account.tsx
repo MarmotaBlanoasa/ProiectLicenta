@@ -33,11 +33,13 @@ const schema = zod.object({
     path: ["confirm_password"],
 });
 const resolver = zodResolver(schema);
+
 export const loader = async ({request}: LoaderFunctionArgs) => {
     const userId = await getUserId(request);
     if (userId) return redirect("/dashboard");
     return json({});
 };
+
 export const action = async ({request}: ActionFunctionArgs) => {
     const {receivedValues, errors, data} = await getValidatedFormData<zod.infer<typeof schema>>(request, resolver);
     if (errors) {
@@ -46,6 +48,7 @@ export const action = async ({request}: ActionFunctionArgs) => {
     const {email, password, businessName, phone, address, taxInfo, bankBalance, cashBalance} = data;
     const redirectTo = safeRedirect('/dashboard', "/");
     const existingUser = await getUserByEmail(email);
+
     if (existingUser) {
         return json(
             {
@@ -67,6 +70,7 @@ export const action = async ({request}: ActionFunctionArgs) => {
         userId: user.id,
     });
 };
+
 export default function CreateAccount() {
     const {formState: {errors}, handleSubmit, register, setValue} = useRemixForm<zod.infer<typeof schema>>({
         resolver,

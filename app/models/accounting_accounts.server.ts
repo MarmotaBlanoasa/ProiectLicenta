@@ -33,6 +33,7 @@ export async function updateAccountingAccountById({id, balance}: {id: Accounting
         data: {balance: (account?.balance || 0) + balance},
     });
 }
+
 export async function updateAccountingAccount({userId,code, balance}: { code: AccountingAccount['code'], userId: User['id'], balance: AccountingAccount['balance']}) {
     const account = await prisma.accountingAccount.findFirst({
         where: {userId, code},

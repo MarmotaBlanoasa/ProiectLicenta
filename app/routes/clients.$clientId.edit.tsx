@@ -1,9 +1,12 @@
 import Header from "~/components/Header";
-import {json, LoaderFunction, redirect} from "@remix-run/node";
+import {ActionFunctionArgs, json, LoaderFunction, redirect} from "@remix-run/node";
 import {getUserId} from "~/session.server";
-import {getClientById} from "~/models/client.server";
+import {getClientById, updateClient} from "~/models/client.server";
 import {useLoaderData, useParams} from "react-router";
 import ClientForm from "~/components/Clients/ClientForm";
+import {getValidatedFormData} from "remix-hook-form";
+import * as zod from "zod";
+import {ClientSchema, resolverClient as resolver} from "~/lib/Types";
 type ClientDetails = {
     name: string
     email: string
@@ -32,6 +35,26 @@ export const loader: LoaderFunction = async ({request, params}) => {
     return json({clientDetails, clientId});
 }
 
+export const action = async ({request, params}: ActionFunctionArgs) => {
+    const {receivedValues, errors, data} =
+        await getValidatedFormData<zod.infer<typeof ClientSchema>>(request, resolver);
+    if (errors) {
+        return json({errors, receivedValues}, {status: 400});
+    }
+    const userId = await getUserId(request);
+    if (!userId) {
+        return redirect('/login');
+    }
+    const {clientId} = params;
+    if (!clientId) {
+        return redirect('/clients')
+    }
+    const update = await updateClient({userId, id: clientId, ...data });
+    if (!update) {
+        return json({errors: {critical: 'An error occurred while updating your information. Please try again later.'}}, {status: 400});
+    }
+    return redirect(`/clients/${clientId}`);
+}
 export default function ClientsClientIdEdit(){
     const {clientDetails} = useLoaderData() as { clientDetails: ClientDetails }
     const {clientId} = useParams();

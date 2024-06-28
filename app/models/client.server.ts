@@ -12,7 +12,7 @@ export function getAllClientsByUser({userId}: { userId: User["id"] }) {
 export function getClientById({id, userId}: Pick<Client, "id"> & { userId: User["id"] }) {
     return prisma.client.findFirst({
         where: {id, userId},
-        select: {name: true, email: true, phone: true, address: true, notes: true},
+        select: {id:true, name: true, email: true, phone: true, address: true, notes: true},
     });
 }
 

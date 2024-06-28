@@ -20,7 +20,7 @@ export const billColumns: ColumnDef<Bill>[] = [
         header: ({column}) => {
             return (
                 <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    Date
+                    Dată
                     <ArrowUpDown className='ml-2 h-4 w-4'/>
                 </Button>
             )
@@ -33,7 +33,7 @@ export const billColumns: ColumnDef<Bill>[] = [
         header: ({column}) => {
             return (
                 <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    Due Date
+                    Scadență
                     <ArrowUpDown className='ml-2 h-4 w-4'/>
                 </Button>
             )
@@ -43,18 +43,18 @@ export const billColumns: ColumnDef<Bill>[] = [
         size: 200
     },
     {
-        header: 'Vendor',
+        header: 'Vânzător',
         accessorKey: 'vendor'
     },
     {
-        header: 'Category',
+        header: 'Categorie',
         accessorKey: 'accountingAccount'
     },
     {
         header: ({column}) => {
             return (
                 <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    Amount
+                    Sumă
                     <ArrowUpDown className='ml-2 h-4 w-4'/>
                 </Button>
             )
@@ -94,19 +94,18 @@ export const billColumns: ColumnDef<Bill>[] = [
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuItem><Link to={`/bills/${bill.id}`}>View
-                                    Bill</Link></DropdownMenuItem>
+                                <DropdownMenuItem><Link to={`/bills/${bill.id}`}>Vezi factură</Link></DropdownMenuItem>
                                 <DropdownMenuItem>
-                                    <Link to={`/bills/${bill.id}/edit`}>Edit Bill</Link>
+                                    <Link to={`/bills/${bill.id}/edit`}>Editează factură</Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
                                     <Link to={`/bills/${bill.id}/delete`}>
-                                        Delete Bill
+                                        Șterge factură
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
                                     <DialogTrigger asChild>
-                                        <Button variant='ghost' size='link'>Add a payment</Button>
+                                        <Button variant='ghost' size='link'>Adaugă o plată</Button>
                                     </DialogTrigger>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -114,10 +113,10 @@ export const billColumns: ColumnDef<Bill>[] = [
                         <DialogContent className='sm:max-w-md'>
                             <DialogHeader>
                                 <DialogTitle>
-                                    Add a new payment
+                                    Adaugă o plată
                                 </DialogTitle>
                                 <DialogDescription>
-                                    Fill out the form below to add a new payment for this bill.
+                                    Adaugă o plată pentru factura FCT {bill.id}
                                 </DialogDescription>
                             </DialogHeader>
                             <div>

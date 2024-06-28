@@ -42,28 +42,26 @@ export default function PaymentForm({defaultValues}: PaymentFormProps) {
             <Input {...register('billId')} type='hidden' id='billId'/>
             <Input {...register('invoiceId')} type='hidden' id='invoiceId'/>
             <div>
-                <p className='font-medium'>Payment Date</p>
+                <p className='font-medium'>Data plății</p>
                 <DatePicker setValue={setValue} valToSet='paymentDate'/>
                 {errors.paymentDate && <p className='text-destructive'>{errors.paymentDate.message}</p>}
             </div>
             <div>
-                <p className='font-medium'>Amount</p>
+                <p className='font-medium'>Sumă</p>
                 <Input onBlur={(e) => setValue('amount', Number(e.target.value))} type='number' name='amount'
-                       id='amount' placeholder='Amount'/>
+                       id='amount' placeholder='Sumă'/>
                 {errors.amount && <p className='text-destructive'>{errors.amount.message}</p>}
             </div>
             <div>
-                <p className='font-medium'>Payment Method</p>
-                <SelectComp onValueChange={setValue} valToChange='method' placeholder='Payment method'
+                <p className='font-medium'>Metodă de plată</p>
+                <SelectComp onValueChange={setValue} valToChange='method' placeholder='Metodă de plată'
                             options={paymentMethods}/>
                 {errors.method && <p className='text-destructive'>{errors.method.message}</p>}
             </div>
             <div className='flex gap-4'>
                 <Button type='submit' disabled={loading}>
-                    {isEdit ? 'Update Payment' : 'Add Payment'}
+                    {isEdit ? 'Editează plată' : 'Adaogă plată'}
                 </Button>
-                {/*<Button type='button' variant='outline' onClick={() => navigate(-1)} disabled={loading}>Go*/}
-                {/*    Back</Button>*/}
             </div>
         </Form>
     )

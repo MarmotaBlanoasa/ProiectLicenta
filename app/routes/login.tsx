@@ -23,26 +23,20 @@ const schema = zod.object({
 });
 const resolver = zodResolver(schema);
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const userId = await getUserId(request);
-  if (userId) return redirect("/dashboard");
-  return json({});
-};
-
 export const action = async ({ request }: ActionFunctionArgs) => {
   const {receivedValues, errors, data} = await getValidatedFormData<zod.infer<typeof schema>>(request, resolver);
   if (errors) {
     return json({errors, receivedValues}, {status: 400});
   }
-    const {email, password} = data;
+  const {email, password} = data;
   const redirectTo = safeRedirect('/dashboard', "/");
 
   const user = await verifyLogin(email, password);
 
   if (!user) {
     return json(
-      { errors: { email: "Invalid email or password", password: null } },
-      { status: 400 },
+        { errors: { email: "Invalid email or password", password: null } },
+        { status: 400 },
     );
   }
 
@@ -53,6 +47,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     userId: user.id,
   });
 };
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const userId = await getUserId(request);
+  if (userId) return redirect("/dashboard");
+  return json({});
+};
+
+
 
 export const meta: MetaFunction = () => [{ title: "Login" }];
 

@@ -23,7 +23,7 @@ import PaymentForm from "~/components/Payments/PaymentForm";
 export const invoiceColumns: ColumnDef<Invoice>[] =
     [
         {
-            header: 'Invoice Number',
+            header: 'Număr Factură',
             accessorKey: 'invoiceNumber',
         },
         {
@@ -46,7 +46,7 @@ export const invoiceColumns: ColumnDef<Invoice>[] =
             }
         },
         {
-            header: 'Date Issued',
+            header: 'Data emiterii',
             accessorKey: 'dateIssued',
             cell: ({row}) => {
                 return (
@@ -57,7 +57,7 @@ export const invoiceColumns: ColumnDef<Invoice>[] =
             }
         },
         {
-            header: 'Due Date',
+            header: 'Scadență',
             accessorKey: 'dueDate',
             cell: ({row}) => {
                 return (
@@ -68,11 +68,11 @@ export const invoiceColumns: ColumnDef<Invoice>[] =
             }
         },
         {
-            header: 'Paid Amount',
+            header: 'Total Plătit',
             accessorKey: 'paidAmount',
         },
         {
-            header: 'Total Amount',
+            header: 'Total de plată',
             accessorKey: 'totalAmount',
         },
         {
@@ -91,17 +91,16 @@ export const invoiceColumns: ColumnDef<Invoice>[] =
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                    <DropdownMenuItem><Link to={`/invoices/${invoice.id}`}>View
-                                        Invoice</Link></DropdownMenuItem>
+                                    <DropdownMenuItem><Link to={`/invoices/${invoice.id}`}>Vezi factură</Link></DropdownMenuItem>
                                     <DropdownMenuItem>
-                                        <Link to={`/invoices/${invoice.id}/edit`}>Edit Invoice</Link>
+                                        <Link to={`/invoices/${invoice.id}/edit`}>Editează factură</Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem>
-                                        <Link to={`/invoices/${invoice.id}/delete`}>Delete Invoice</Link>
+                                        <Link to={`/invoices/${invoice.id}/delete`}>Șterge factură</Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem>
                                         <DialogTrigger asChild>
-                                            <Button variant='ghost' size='link'>Add a payment</Button>
+                                            <Button variant='ghost' size='link'>Adaugă plată</Button>
                                         </DialogTrigger>
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -109,10 +108,10 @@ export const invoiceColumns: ColumnDef<Invoice>[] =
                             <DialogContent className='sm:max-w-md'>
                                 <DialogHeader>
                                     <DialogTitle>
-                                        Add a new payment
+                                        Adaugă plată
                                     </DialogTitle>
                                     <DialogDescription>
-                                        Fill out the form below to add a new payment for this invoice.
+                                        Adaugă o nouă plată pentru această factura FCT {invoice.id}
                                     </DialogDescription>
                                 </DialogHeader>
                                 <div>

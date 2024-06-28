@@ -8,7 +8,8 @@ import {ClientSchema, resolverClient as resolver} from "~/lib/Types";
 import ClientForm from "~/components/Clients/ClientForm";
 
 export const action = async ({request}: ActionFunctionArgs) => {
-    const {receivedValues, errors, data} = await getValidatedFormData<zod.infer<typeof ClientSchema>>(request, resolver);
+    const {receivedValues, errors, data} =
+        await getValidatedFormData<zod.infer<typeof ClientSchema>>(request, resolver);
     if (errors) {
         return json({errors, receivedValues}, {status: 400});
     }

@@ -17,7 +17,6 @@ export const loader: LoaderFunction = async ({request, params}) => {
         return redirect('/login')
     }
     const clientDetails = await getClientById({id: clientId, userId});
-    //TODO: ADD INVOICES
     return json({clientDetails});
 }
 export default function ClientsClientId() {
@@ -61,9 +60,6 @@ export default function ClientsClientId() {
                     <p className='font-medium'>Notes</p>
                     <p className=''>{clientDetails.notes}</p>
                 </div>
-            </div>
-            <div className='pt-4'>
-                <h2 className='text-lg font-medium'>Invoices</h2>
             </div>
         </>
     )

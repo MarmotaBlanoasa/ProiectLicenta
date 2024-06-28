@@ -1,4 +1,4 @@
-import {Form, Link, useActionData, useLocation, useNavigate, useNavigation} from "@remix-run/react";
+import {Form, Link, useActionData, useFetcher, useLocation, useNavigate, useNavigation} from "@remix-run/react";
 import {Input} from "~/components/ui/ui/input";
 import {Textarea} from "~/components/ui/ui/textarea";
 import {Button} from "~/components/ui/ui/button";
@@ -26,12 +26,13 @@ export default function ClientForm({action, defaultValues, clientId}: ClientForm
         resolver,
         defaultValues: defaultValues,
     });
+    const fetcher = useFetcher()
     const navigation = useNavigation();
     const navigate = useNavigate();
     const isSubmitting = navigation.state !== 'idle';
     const actionData = useActionData<ActionFunction>();
     return(
-        <Form className='flex flex-col gap-4 pt-4 w-1/3' onSubmit={handleSubmit}>
+        <fetcher.Form className='flex flex-col gap-4 pt-4 w-1/3' onSubmit={handleSubmit}>
             <div>
                 <label htmlFor='businessName'>Client Name</label>
                 <Input {...register('name')} id='name' type='text' name='name'
@@ -63,6 +64,6 @@ export default function ClientForm({action, defaultValues, clientId}: ClientForm
                 <Button type='submit' disabled={isSubmitting}>{isEdit? 'Edit' : 'Add'} New Client</Button>
                 <Button type='button' variant='outline' onClick={()=> navigate(-1)}>Go Back</Button>
             </div>
-        </Form>
+        </fetcher.Form>
     )
 }

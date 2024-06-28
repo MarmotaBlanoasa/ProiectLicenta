@@ -12,16 +12,16 @@ export default function Navbar(){
             <h1 className='text-2xl font-bold pb-6'>FinanceForge</h1>
             <div className='flex flex-col gap-4'>
                 <NavLink to='/dashboard' name='Dashboard' icon='dashboard'/>
-                <NavLink to='/clients' name='Clients' icon='clients'/>
-                <NavLink to='/vendors' name='Vendors' icon='vendors'/>
-                <NavLink to='/bills' name='Bills' icon='bills'/>
+                <NavLink to='/clients' name='Clienți' icon='clients'/>
+                <NavLink to='/vendors' name='Vânzători' icon='vendors'/>
+                <NavLink to='/bills' name='Facturi primite' icon='bills'/>
                 {/*<NavLink to='/expenses' name='Expenses' icon='expenses'/>*/}
-                <NavLink to='/invoices' name='Invoices' icon='invoices'/>
-                <NavLink to='/payments' name='Payments' icon='payments'/>
-                <NavLink to='/profile' name='Profile' icon='profile'/>
+                <NavLink to='/invoices' name='Facturi emise' icon='invoices'/>
+                <NavLink to='/payments' name='Plăți' icon='payments'/>
+                <NavLink to='/profile' name='Profil' icon='profile'/>
             </div>
             <div className='absolute bottom-8' onClick={handleLogout}>
-                <NavLink to='/logout' name='logout' icon='logout' arrow={false}/>
+                <NavLink to='/logout' name='Delogare' icon='logout' arrow={false}/>
             </div>
         </nav>
     )

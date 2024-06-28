@@ -42,12 +42,10 @@ export const loader: LoaderFunction = async ({request}) => {
 
         }
     });
-    const totalRevenue = await getTotalRevenueByMonth({userId});
     return json({
         totalOutstandingInvoices,
         invoicesData,
         billsData,
-        totalRevenue,
         totalOutstandingBills,
         cashBankBalance,
         profitLossByMonth
@@ -68,13 +66,12 @@ export default function DashboardIndex() {
         cashBankBalance: { cash: { balance: number }, bank: { balance: number } },
         invoicesData: Invoice[] & { client: string }[],
         billsData: Bill[],
-        totalRevenue: { month: string, totalAmount: number }[],
         profitLossByMonth: { month: string, profitLoss: number }[]
     };
     return (
         <>
             <Header title='Dashboard'
-                    description='View key financial metrics at a glance, including cash flow status and outstanding receivables'>
+                    description='Vizualizați rapid principalele metrici financiare, inclusiv situația fluxului de numerar și creanțele restante.'>
                 <div className='flex gap-4'>
                     <Link to='/dashboard/profit-loss-report'>
                         <Button className='flex gap-2 items-center'>
